@@ -1,5 +1,5 @@
 // This simple script targets the body and adds a thick red border
-document.body.style.border = "5px solid red";
+//
 console.log("Borderify is active!");
 async function retryWithDelay(func, maxAttempts, delayMs) {
 	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -31,7 +31,7 @@ const modifyCarousel = async () => {
 	const carousel_container_class = 'react-friends-carousel-container'
 	const carousel_container_div = document.getElementsByClassName(`${carousel_container_class}`)[0]
 	console.log(carousel_container_div)
-	carousel_container_div.style.visibility = "hidden"
+	//carousel_container_div.style.visibility = "hidden"
 	const carousel_header_classes = ['container-header', 'people-list-header']
 	const carousel_header_search_string = carousel_header_classes.reduce((accumulator, curr) => `${accumulator} ${curr}`, carousel_header_classes[0])
 	console.log(carousel_header_search_string)
@@ -54,6 +54,24 @@ const tryModifyCarousel = async () => {
 	}
 }
 
+const replaceCarousel = () => {
+	const carousel_container_classname = 'friend-carousel-container'
+	const original = document.querySelector(`.${carousel_container_classname}`)
+	const new_carousel = document.createElement("div")
+	const new_carousel_container_classname = 'extension-friend-carousel-container'
+	new_carousel.classList.add(new_carousel_container_classname)
+	original.replaceWith(new_carousel);
+}
+const tryReplaceCarousel = async () => {
+	try {
+		const num_attempts = 100
+		const cooldown = 100
+		await retryWithDelay(replaceCarousel, num_attempts, cooldown)
+	}
+	catch (e) {
+		console.error("tried but could not modify friend carousel: ", e)	
+	}
+}
 const tryRemovingFriendCarousel = async () => {
 	try {
 		const num_attempts = 15 
@@ -140,5 +158,6 @@ async function main() {
 }
 
 //tryRemovingFriendCarousel()
-tryModifyCarousel()
+//tryModifyCarousel()
+tryReplaceCarousel()
 //main()

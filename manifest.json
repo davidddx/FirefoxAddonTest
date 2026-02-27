@@ -7,7 +7,8 @@
   "content_scripts": [
     {
       "matches": ["*://*.roblox.com/home"],
-      "js": ["borderify.js"]
+      "js": ["borderify.js"],
+      "css": ["styles.css"]
     }
   ],
   "browser_specific_settings": {
