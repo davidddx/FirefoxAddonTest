@@ -1,5 +1,5 @@
 // This simple script targets the body and adds a thick red border
-//
+const prefers_dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 console.log("Borderify is active!");
 async function retryWithDelay(func, maxAttempts, delayMs) {
 	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -18,49 +18,48 @@ async function retryWithDelay(func, maxAttempts, delayMs) {
 	}
 }
 
-const removeFriendCarouselDiv = async () => {
-	const friend_carousel_container = 'friend-carousel-container'
-	const container_div = document.querySelector(`.${friend_carousel_container}`)
-	if(container_div === null) {
-		throw new Error('container div null')		
-	}
-	container_div.remove()
-	console.log("successfully deleted carousel.")
-};
-const modifyCarousel = async () => {
-	const carousel_container_class = 'react-friends-carousel-container'
-	const carousel_container_div = document.getElementsByClassName(`${carousel_container_class}`)[0]
-	console.log(carousel_container_div)
-	//carousel_container_div.style.visibility = "hidden"
-	const carousel_header_classes = ['container-header', 'people-list-header']
-	const carousel_header_search_string = carousel_header_classes.reduce((accumulator, curr) => `${accumulator} ${curr}`, carousel_header_classes[0])
-	console.log(carousel_header_search_string)
-	const carousel_header_div = carousel_container_div.getElementsByClassName(`${carousel_header_search_string}`)[0]
-	const header = carousel_header_div.querySelector(`h2`)
-	const excluded_ids = [335458611]
-	const user_id = await getUserId()
-	const modified_friends = await getModifiedFriends(user_id, excluded_ids)
-	const modified_friend_count = modified_friends.length
-	header.textContent = `Friends (${modified_friend_count})` 
-}
-const tryModifyCarousel = async () => {
-	try {
-		const num_attempts = 100
-		const cooldown = 100
-		await retryWithDelay(modifyCarousel, num_attempts, cooldown)
-	}
-	catch (e) {
-		console.error("tried but could not modify friend carousel: ", e)	
-	}
-}
-
 const replaceCarousel = () => {
 	const carousel_container_classname = 'friend-carousel-container'
 	const original = document.querySelector(`.${carousel_container_classname}`)
 	const new_carousel = document.createElement("div")
+	original.replaceWith(new_carousel);
 	const new_carousel_container_classname = 'extension-friend-carousel-container'
 	new_carousel.classList.add(new_carousel_container_classname)
-	original.replaceWith(new_carousel);
+	let arrow_color = "#FFFFFF"
+	let muted_arrow_color = "#F5F5DC"
+	if(!prefers_dark) {
+		arrow_color = "#000000"
+		muted_arrow_color = "#708090"
+	}
+	const right_arrow_svg = `
+	<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+	  <g id="Arrow / Arrow_Right_MD">
+	    <path id="Vector" d="M5 12H19M19 12L13 6M19 12L13 18" stroke="${arrow_color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+	  </g>
+	</svg>
+	`;
+	const left_arrow_svg = `
+	<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+	  <g id="Arrow / Arrow_Left_MD">
+	    <path id="Vector" d="M19 12H5M5 12L11 18M5 12L11 6" stroke="${arrow_color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+	  </g>
+	</svg>
+	`;
+	
+	const header_class_name = 'extension-friend-carousel-header' 
+	const body_class_name = 'extension-friend-carousel-body'
+	const header_div = document.createElement("div")
+	const body_div = document.createElement("div")
+	header_div.classList.add(header_class_name)
+	body_div.classList.add(body_class_name)
+	body_div.innerHTML += `${left_arrow_svg}`;
+	//
+	//
+	//
+	body_div.innerHTML += `${right_arrow_svg}`;
+	new_carousel.appendChild(header_div)
+	new_carousel.appendChild(body_div)
+
 }
 const tryReplaceCarousel = async () => {
 	try {
@@ -70,16 +69,6 @@ const tryReplaceCarousel = async () => {
 	}
 	catch (e) {
 		console.error("tried but could not modify friend carousel: ", e)	
-	}
-}
-const tryRemovingFriendCarousel = async () => {
-	try {
-		const num_attempts = 15 
-		const cooldown = 2000 // ms
-		const result = await retryWithDelay(removeFriendCarouselDiv, num_attempts, cooldown); 
-		console.log(`Result: ${result}`);
-	} catch (e) {
-		console.error(e.message);
 	}
 }
 
@@ -98,18 +87,7 @@ async function getUserId() {
 		console.error("Communication error:", e);
 	}
 }
-async function getUserFriendCount(id) {
-	const url = `${friends_api}/v1/users/${id}/friends/count` 
-	try {
-		const response = await fetch(url, {credentials: 'include'})
-		const data = await response.json()
-		console.log(data)
-		return data.count
-	}
-	catch (e) {
-		console.error("Could not get friend count: ", e)
-	}
-}
+
 async function getUserFriends(id) {
 	try {
 		console.log(id)
