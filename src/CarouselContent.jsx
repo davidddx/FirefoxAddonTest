@@ -17,7 +17,6 @@ function FriendTile({info, ref}) {
 		headshot_src = info.headshot	
 	}
 	if (ref != undefined) {
-
 		return (
 			<div className="better-carousel-friend-tile" ref={ref}>
 				<span className="better-carousel-image-box">
@@ -54,7 +53,7 @@ function CarouselContent({friends}) {
 			const container_width = getElementTotalWidth(containerRef.current) 
 			const tile_width = getElementTotalWidth(tileRef.current);
 			const horizontal_fit = Math.floor(container_width / tile_width);
-			const total_fit = horizontal_fit - 1 // choose something slightly under upperbound so it looks less messy 
+			const total_fit = horizontal_fit 
 			set_max_tiles_per_row(total_fit)
 			console.log("Tile fit: ", total_fit)
 			set_is_measuring(false);
@@ -98,7 +97,7 @@ function CarouselContent({friends}) {
 	const sliced_friends = friends.slice(left, max_tiles_per_row)
 	return (
 		<div className="better-carousel-content" ref={containerRef}>
-			{default_user_info != null && <FriendTile info={default_user_info} key={default_user_info.id} ref={tileRef}/>}
+			{default_user_info != null && is_measuring && <FriendTile info={default_user_info} key={default_user_info.id} ref={tileRef}/>}
 			{sliced_friends.map((friend) =>  <FriendTile info={friend_info[friend]} key={friend}/>)} 
 		</div>
 	)
