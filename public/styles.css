@@ -1,0 +1,55 @@
+.better-carousel-friend-tile {
+	cursor: pointer;
+	margin-bottom: 16px;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+.better-carousel-header-wrapper {
+	display: flex;
+	flex-direction: row;
+}
+.better-carousel-header-refresh-button {
+	margin-left: 0.5em;
+}
+.better-carousel-header-refresh-button:hover {
+	cursor: pointer;
+}
+:root {
+	--extension-refresh-button-color: #000000;
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--extension-refresh-button-color: #FFFFFF;
+	}
+}
+.better-carousel-refresh-button-svg {
+    height: 1em;
+    width: 1em; /* Always give SVGs a width if you give them a height */
+    vertical-align: middle;
+}
+
+/* Target the container of the friend's headshot */
+.better-carousel-image-box {
+	width: 90px;  /* Or whatever size you want */
+	height: 90px;
+	overflow: hidden; /* This is the "crop" */
+	border-radius: 50%; /* If you want circular heads */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #e5e5e5; /* Placeholder color */
+}
+
+/* Target the actual image */
+.better-carousel-image-box img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important; /* Forces the image to fill the box without stretching */
+	object-position: center !important; /* Keeps the face in the middle */
+	display: block;
+	flex-shrink: 0px;
+}
+.better-carousel-content {
+	display: flex;
+	flex-direction: row;
+}

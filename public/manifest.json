@@ -1,0 +1,25 @@
+{
+	"manifest_version": 3,
+	"name": "Better-Roblox-Friend-Carousel",
+	"version": "1.0",
+	"permissions": ["storage"],
+	"description": "Better friend carousel for roblox.com/home",
+	"content_scripts": [
+		{
+			"matches": ["*://*.roblox.com/home"],
+			"js": ["content.js"],
+			"css": ["styles.css"]
+		}
+	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "better-friend-carousel@example.com"
+		}
+	},
+	"web_accessible_resources": [
+		{
+			"resources": ["*.map"],
+			"matches": ["*://*.roblox.com/*"]
+		}
+	]
+}
