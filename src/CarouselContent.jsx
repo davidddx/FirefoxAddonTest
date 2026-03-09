@@ -32,26 +32,42 @@ function RightArrow({}) {
 	)
 }
 
-function FriendTile({id, ref}) {
+function FriendTile({id, ref, cache}) {
 	const [info, set_info] = useState({})
-	const [fetched_info_cache, set_fetched_info_cache] = useState({})
 	useEffect(() => {
 		const fetchdata = async () => {
+			console.log(`cache before fetchdata on ${id}: `, cache)
+			if (cache === undefined) {
+				return
+			}
+			if (Object.hasOwn(cache, id)) {
+				set_info(cache[id])
+				return
+			}
 			const fetched_user_info = await getUserInfo(id)
+			if (fetched_user_info.isBanned) {
+				set_info(null)
+				return
+			}
 			const headshot = await getUserAvatarHeadshot(id)
 			console.log("fetched_user_info: ", fetched_user_info)
 			console.log("Headshot: ", headshot)	
-			const entry = {...info, headshot: headshot}
+			const entry = {...fetched_user_info, headshot: headshot}
 			set_info(entry)
-			fetched_info_cache[id] = fetched_user_info
+			cache[id] = entry 
+			console.log(`cache after fetchdata on ${id}: `, cache)
 		}
 		fetchdata()
 	}, [id])
-	console.log("fetched_info_cache: ", fetched_info_cache)
 	let headshot_src = ""
-	if (info != undefined) {
+	let username = ""
+	let display_name = ""
+	if (info !== undefined) {
 		headshot_src = info.headshot	
+		username = info.name
+		display_name = info.displayName
 	}
+	console.assert(info !== null, "info === null implies a banned user")
 	if (ref != undefined) {
 		return (
 			<div className="better-carousel-friend-tile" ref={ref} style={{visibility: 'hidden', position:'fixed'}}>
@@ -61,11 +77,30 @@ function FriendTile({id, ref}) {
 			</div>
 		)
 	}
+	const [hover, set_hover] = useState(false)
+	const mouse_enter_handler = (e) => {
+		set_hover(true)
+		console.log("Entered friend tile " + id)
+	}
+	const mouse_leave_handler = (e) => {
+		set_hover(false)
+		console.log("Left friend tile " + id)
+	}
+	let tile_class_name = "better-carousel-friend-tile"
+	if (hover) {
+		tile_class_name += ' ' + 'better-carousel-focused-background'
+	}
 	return (
-		<div className="better-carousel-friend-tile">
+		<div className={tile_class_name} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
 			<span className="better-carousel-image-box">
 				<img src={headshot_src}/>
 			</span>
+			<div className="better-carousel-text-content better-carousel-bold-title">
+				{display_name}
+			</div>
+			<div className="better-carousel-text-content">
+				{username}
+			</div>
 		</div>
 	)
 
@@ -75,17 +110,14 @@ function CarouselContent({friends}) {
 	const containerRef = useRef(null)
 	const tileRef = useRef(null)
 	const [max_tiles_per_row, set_max_tiles_per_row] = useState(0)
-	const [is_measuring, set_is_measuring] = useState(true);
 	const [hover, set_hover] = useState(false);
 	const mouse_enter_handler = (e) => {
 		set_hover(true)
-		console.log("mouse entered")
+		console.log("mouse entered friend carousel")
 	}
 	const mouse_leave_handler = (e) => {
-		/*
 		set_hover(false)
-		console.log("mouse left")
-		*/
+		console.log("mouse left friend carousel")
 	}
 	console.log("Container ref: ", containerRef)
 	// calculate tile fit
@@ -105,34 +137,25 @@ function CarouselContent({friends}) {
 		const total_fit = calculateFit();
 		set_max_tiles_per_row(total_fit)
 		console.log("Tile fit: ", total_fit)
-		set_is_measuring(false);
 
 		window.addEventListener('resize', () => {
-			set_is_measuring(true); // Switch back to measurement mode on resize
-			calculateFit();
+			const fit = calculateFit();
+			set_max_tiles_per_row(fit)
 		});
 		return () => window.removeEventListener('resize', calculateFit);
 	}, []);
-	// extra fit calculation measure for some setups
-	
-	const current_render_fit = calculateFit()
-	if (current_render_fit != max_tiles_per_row) {
-		set_max_tiles_per_row(current_render_fit)
-		console.log("current render fit=", current_render_fit)
-		console.log("max tiles per row=", max_tiles_per_row)
-	}
-	
-
+	const info_cache = {}
 	const default_user_id = 156 // builderman's roblox id. 
 	const left = 0
 	const sliced_friends = friends.slice(left, max_tiles_per_row)
 	console.log("page rerendering")
 	console.log("Max tiles per row: ", max_tiles_per_row)
+	const container_class_name = "better-carousel-content"
 	return (
-		<div className="better-carousel-content" ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
+		<div className={container_class_name} ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
 			{hover && <LeftArrow/>}
 			{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef}/>}
-			{sliced_friends.map((friend) =>  <FriendTile id={friend} key={friend}/>)} 
+			{sliced_friends.map((friend) =>  <FriendTile id={friend} key={friend} cache={info_cache}/>)} 
 			{hover && <RightArrow/>}
 		</div>
 	)

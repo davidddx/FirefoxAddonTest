@@ -16,10 +16,14 @@
 }
 :root {
 	--extension-refresh-button-color: #000000;
+	--extension-arrow-color: #000000;
+	--extension-focused-background-color: #D8D6CF;
 }
 @media (prefers-color-scheme: dark) {
 	:root {
+		--extension-focused-background-color: #272930;
 		--extension-refresh-button-color: #FFFFFF;
+		--extension-arrow-color: #FFFFFF;
 	}
 }
 .better-carousel-refresh-button-svg {
@@ -38,6 +42,7 @@
 	align-items: center;
 	justify-content: center;
 	background-color: #e5e5e5; /* Placeholder color */
+	margin-bottom: 2px;
 }
 
 /* Target the actual image */
@@ -53,4 +58,39 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-around;
+	align-items: center;
+	padding-top: 2px;
+	position: relative;
+}
+.better-carousel-arrow-tile {
+
+}
+.better-carousel-arrow-wrapper {
+	z-index: 1000; /*navigation container should have a higher z index*/
+	width: 45px;
+	height: 45px;
+	position: absolute;
+}
+.better-carousel-arrow-svg {
+	vertical-align: baseline;
+}
+.better-carousel-arrow-svg path{
+	stroke: var(--extension-arrow-color);	
+}
+.better-carousel-focused-background {
+	background-color: var(--extension-focused-background-color); 
+	border-radius: 12px;
+}
+.better-carousel-text-content {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	margin-top: 0;
+	margin-bottom: 4px;
+	overflow: hidden;
+	width: 90px;
+	font-size: 12px;
+	text-align: center;
+}
+.better-carousel-bold-title {
+	font-weight: 700;
 }
