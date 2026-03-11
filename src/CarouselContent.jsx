@@ -9,24 +9,45 @@ function getElementTotalWidth(element) {
 	return totalWidth;
 }
 
+const right_arrow_id = "better-carousel-right-arrow-id"
+const left_arrow_id = "better-carousel-left-arrow-id"
+
 function LeftArrow({}) {
 	console.log("Left arrow rendering")
+	const [hover, set_hover] = useState(false)
+	const mouse_enter_handler = () => set_hover(true)
+	const mouse_leave_handler = () => set_hover(false)
+	let container_class_name = "better-carousel-arrow-tile"
+	if (hover) {
+		container_class_name = "better-carousel-arrow-tile-focused"
+	}
 	return (
-		<div className="better-carousel-arrow-wrapper" style={{left: 0}}>
-		<svg className="better-carousel-arrow-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
-			<path d="M20 4V20M4 12H16M4 12L8 8M4 12L8 16" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		</svg>
+		<div className={container_class_name} style={{left: 0, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px'}} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler} id={left_arrow_id}>
+			<div className="better-carousel-arrow-wrapper">
+				<svg className="better-carousel-arrow-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
+					<path d="M20 4V20M4 12H16M4 12L8 8M4 12L8 16" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</div>
 		</div>
 	)
 }
 
 function RightArrow({}) {
 	console.log("Right arrow rendering")
+	let container_class_name = "better-carousel-arrow-tile"
+	const [hover, set_hover] = useState(false)
+	const mouse_enter_handler = () => set_hover(true)
+	const mouse_leave_handler = () => set_hover(false)
+	if (hover) {
+		container_class_name = "better-carousel-arrow-tile-focused"
+	}
 	return (
-		<div className="better-carousel-arrow-wrapper" style={{right: 0}}>
-			<svg className="better-carousel-arrow-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M4 4V20M8 12H20M20 12L16 8M20 12L16 16" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-			</svg>
+		<div className={container_class_name} style={{right: 0, borderTopRightRadius: '12px', borderBottomRightRadius: '12px'}} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler} id={right_arrow_id}>
+			<div className="better-carousel-arrow-wrapper" >
+				<svg className="better-carousel-arrow-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M4 4V20M8 12H20M20 12L16 8M20 12L16 16" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</div>
 		</div>
 
 	)
@@ -90,18 +111,21 @@ function FriendTile({id, ref, cache}) {
 	if (hover) {
 		tile_class_name += ' ' + 'better-carousel-focused-background'
 	}
+	const redirecting_link = `https://www.roblox.com/users/${id}/profile` 
 	return (
-		<div className={tile_class_name} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
-			<span className="better-carousel-image-box">
-				<img src={headshot_src}/>
-			</span>
-			<div className="better-carousel-text-content better-carousel-bold-title">
-				{display_name}
+		<a href={redirecting_link}>
+			<div className={tile_class_name} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
+				<span className="better-carousel-image-box">
+					<img src={headshot_src}/>
+				</span>
+				<div className="better-carousel-text-content better-carousel-bold-title">
+					{display_name}
+				</div>
+				<div className="better-carousel-text-content">
+					{username}
+				</div>
 			</div>
-			<div className="better-carousel-text-content">
-				{username}
-			</div>
-		</div>
+		</a>
 	)
 
 
@@ -146,13 +170,40 @@ function CarouselContent({friends}) {
 	}, []);
 	const info_cache = {}
 	const default_user_id = 156 // builderman's roblox id. 
-	const left = 0
-	const sliced_friends = friends.slice(left, max_tiles_per_row)
+	const [left, set_left] = useState(0)
+	const sliced_friends = friends.slice(left, left + max_tiles_per_row)
 	console.log("page rerendering")
 	console.log("Max tiles per row: ", max_tiles_per_row)
 	const container_class_name = "better-carousel-content"
+	const click_handler = (e) => {
+		console.log("e.target ", e.target)
+		console.log("e.target.idd ", e.target.id)
+		const left_closest = e.target.closest(`#${left_arrow_id}`)
+		const right_closest = e.target.closest(`#${right_arrow_id}`)
+		if(left_closest === null && right_closest === null) {
+			return
+		}
+		let closest_id = left_arrow_id 
+		if (right_closest) {
+			closest_id = right_arrow_id	
+		}
+		console.log("Arrow: ", closest_id)
+		const max_left = friends.length - max_tiles_per_row
+		const min_left = 0
+		let old_left = left
+		if(closest_id === left_arrow_id) {
+			old_left -= max_tiles_per_row
+			old_left = Math.max(old_left, min_left)
+		}
+		else {
+			old_left += max_tiles_per_row
+			old_left = Math.min(old_left, max_left)
+		}
+		set_left(old_left)	
+	}
+	console.log('sliced friends: ', sliced_friends)
 	return (
-		<div className={container_class_name} ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
+		<div className={container_class_name} ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler} onClick={click_handler}>
 			{hover && <LeftArrow/>}
 			{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef}/>}
 			{sliced_friends.map((friend) =>  <FriendTile id={friend} key={friend} cache={info_cache}/>)} 

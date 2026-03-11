@@ -3,6 +3,8 @@
 	margin-bottom: 16px;
 	margin-left: 3px;
 	margin-right: 3px;
+	transition: background-color 0.3s ease-in-out;
+	border-radius: 12px;
 }
 .better-carousel-header-wrapper {
 	display: flex;
@@ -63,13 +65,32 @@
 	position: relative;
 }
 .better-carousel-arrow-tile {
-
+	z-index: 1000; /*navigation container should have a higher z index*/
+	position: absolute;
+	height: 100%;
+	cursor: pointer;
+	margin-bottom: 16px;
+	display: flex;
+	align-items: center;
+	background-color: #2C2C2C;
+	opacity: 0.8;
+	transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
+}
+.better-carousel-arrow-tile-focused {
+	z-index: 1000; /*navigation container should have a higher z index*/
+	position: absolute;
+	height: 100%;
+	cursor: pointer;
+	margin-bottom: 16px;
+	display: flex;
+	align-items: center;
+	background-color: #2C2C2C;
+	opacity: 1;
+	transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
 }
 .better-carousel-arrow-wrapper {
-	z-index: 1000; /*navigation container should have a higher z index*/
 	width: 45px;
 	height: 45px;
-	position: absolute;
 }
 .better-carousel-arrow-svg {
 	vertical-align: baseline;
@@ -79,7 +100,6 @@
 }
 .better-carousel-focused-background {
 	background-color: var(--extension-focused-background-color); 
-	border-radius: 12px;
 }
 .better-carousel-text-content {
 	white-space: nowrap;
