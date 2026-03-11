@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef, useLayoutEffect} from 'react'
+import { useState, useEffect, useRef, useLayoutEffect, useContext} from 'react'
 import { getUserInfo, getUserAvatarHeadshot } from './UserDataFetching.js'
+import { NumRowsContext, FriendDataContext } from './AppContext.jsx'
+
 function getElementTotalWidth(element) {
 	const style = window.getComputedStyle(element);
 	const elementWidth = element.offsetWidth;
@@ -157,11 +159,9 @@ function CarouselContent({friends}) {
 		return total_fit
 	};
 	useLayoutEffect(() => {
-
 		const total_fit = calculateFit();
 		set_max_tiles_per_row(total_fit)
 		console.log("Tile fit: ", total_fit)
-
 		window.addEventListener('resize', () => {
 			const fit = calculateFit();
 			set_max_tiles_per_row(fit)
@@ -172,6 +172,22 @@ function CarouselContent({friends}) {
 	const default_user_id = 156 // builderman's roblox id. 
 	const [left, set_left] = useState(0)
 	const sliced_friends = friends.slice(left, left + max_tiles_per_row)
+	const num_rows_context_val = useContext(NumRowsContext)
+	const num_rows = num_rows_context_val.num_rows
+	let left_ptr = left
+	const carousel_rows = []
+	for (let i = 0; i < num_rows; ++i, left_ptr = left_ptr + max_tiles_per_row) {
+		if (left_ptr >= friends.length) {
+			break
+		}
+		const sliced_friends_row = friends.slice(left_ptr, left_ptr + max_tiles_per_row)
+		console.log("Left ptr: ", left_ptr, " right: ", left_ptr + max_tiles_per_row)
+		console.log(`row ${i} sliced friends: `, sliced_friends_row)
+		carousel_rows.push(sliced_friends_row)
+		
+	}
+	console.log("Carousel Rows", carousel_rows)
+	console.log("Num rows: ", num_rows)
 	console.log("page rerendering")
 	console.log("Max tiles per row: ", max_tiles_per_row)
 	const container_class_name = "better-carousel-content"
@@ -202,11 +218,23 @@ function CarouselContent({friends}) {
 		set_left(old_left)	
 	}
 	console.log('sliced friends: ', sliced_friends)
+	const generate_friend_row = (row_ids) => {
+		const friend_row_class_name = "better-carousel-friend-row"
+		return (
+			<div className={friend_row_class_name}>
+				{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef}/>}
+				{row_ids.map((friend) =>  <FriendTile id={friend} key={friend} cache={info_cache}/>)} 
+			</div>
+		)
+	}
 	return (
 		<div className={container_class_name} ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler} onClick={click_handler}>
 			{hover && <LeftArrow/>}
+			{carousel_rows.map((row) => generate_friend_row(row))}
+			{/*
 			{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef}/>}
 			{sliced_friends.map((friend) =>  <FriendTile id={friend} key={friend} cache={info_cache}/>)} 
+			*/}
 			{hover && <RightArrow/>}
 		</div>
 	)
