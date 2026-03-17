@@ -150,8 +150,6 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 			</div>
 		</a>
 	)
-
-
 }
 function CarouselContent({friends, cache}) {
 	const containerRef = useRef(null)
@@ -188,15 +186,19 @@ function CarouselContent({friends, cache}) {
 		const total_fit = calculateFit();
 		set_max_tiles_per_row(total_fit)
 		console.log("Tile fit: ", total_fit)
-
 		window.addEventListener('resize', editMaxTiles)
 		return () => window.removeEventListener('resize', editMaxTiles);
 	}, []);
 	const info_cache = cache 
-	const [left, set_left] = useState(0)
-	const sliced_friends = friends.slice(left, left + max_tiles_per_row)
 	const num_rows_context_val = useContext(NumRowsContext)
 	const num_rows = num_rows_context_val.num_rows
+	const [left, set_left] = useState(0)
+	const max_left = Math.max(0, (friends.length - max_tiles_per_row*num_rows))
+	if (left > max_left) {
+		// needs a rerender in this case
+		set_left(max_left)
+	}
+	const sliced_friends = friends.slice(left, left + max_tiles_per_row)
 	let left_ptr = left
 	const carousel_rows = []
 	for (let i = 0; i < num_rows; ++i, left_ptr = left_ptr + max_tiles_per_row) {
@@ -227,7 +229,7 @@ function CarouselContent({friends, cache}) {
 			closest_id = right_arrow_id	
 		}
 		console.log("Arrow: ", closest_id)
-		const max_left = friends.length - max_tiles_per_row
+		
 		const min_left = 0
 		let old_left = left
 		if(closest_id === left_arrow_id) {
