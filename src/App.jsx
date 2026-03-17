@@ -2,7 +2,7 @@ import {useState, useEffect, useMemo} from 'react';
 import CarouselHeader from './CarouselHeader.jsx'
 import CarouselContent from './CarouselContent.jsx'
 import * as dataFetching from './UserDataFetching.js'
-import {NumRowsContext, FriendDataContext} from './AppContext.jsx'
+import {NumRowsContext} from './AppContext.jsx'
 function App() {
 	const app_wrapper_class_name = "better-carousel-extension-container"
 	const [user_id, set_user_id] = useState(null)
@@ -33,18 +33,12 @@ function App() {
 		num_rows,
 		update_num_rows	
 	}), [num_rows])
-	const [friend_data, set_friend_data] = useState({})
-	const friend_data_context_memo = useMemo(() => ({
-		friend_data, 
-		set_friend_data
-	}), [friend_data])
+	const friend_cache = {}
 	return (
 		<div className={app_wrapper_class_name}>
 			<NumRowsContext.Provider value={num_rows_context_memo}>
-			<FriendDataContext.Provider value={friend_data_context_memo}>
 				<CarouselHeader num_friends={user_friends.length}/>
-				<CarouselContent friends={user_friends}/>
-			</FriendDataContext.Provider>
+				<CarouselContent friends={user_friends} cache={friend_cache}/>
 			</NumRowsContext.Provider>
 		</div>	
 	);
