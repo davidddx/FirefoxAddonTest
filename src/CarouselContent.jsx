@@ -46,7 +46,7 @@ function RightArrow({clickable}) {
 	if (hover) {
 		container_class_name = "better-carousel-arrow-tile-focused"
 	}
-	if (clickable) {
+	if (!clickable) {
 		container_class_name = "better-carousel-arrow-tile-muted"
 	}
 	return (
@@ -57,7 +57,6 @@ function RightArrow({clickable}) {
 				</svg>
 			</div>
 		</div>
-
 	)
 }
 
@@ -67,7 +66,6 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 	useEffect(() => {
 		const fetchdata = async () => {
 			console.log(`cache before fetchdata on ${id}: `, cache)
-			
 			if (cache === undefined) {
 				return
 			}
@@ -75,9 +73,7 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 				set_info(cache[id])
 				return
 			}
-			
 			const fetched_user_info = await getUserInfo(id)
-			
 			if (fetched_user_info.isBanned) {
 				set_info(null)
 				cache[id] = null
@@ -124,23 +120,28 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 		tile_class_name += ' ' + 'better-carousel-focused-background'
 	}
 	const redirecting_link = `https://www.roblox.com/users/${id}/profile` 
+	const avatar_card_class_name = "better-carousel-avatar-card"
 	if (ref !== undefined) {
 		console.log(" ref not undefined ")
 		console.log(" id: ", id)
 		return (
 			<div className="better-carousel-friend-tile" ref={ref} style={{visibility: 'hidden', position:'fixed'}}>
-				<span className="better-carousel-image-box">
-					<img src={headshot_src}/>
-				</span>
+				<div className={avatar_card_class_name}>
+					<span className="better-carousel-image-box">
+						<img src={headshot_src}/>
+					</span>
+				</div>
 			</div>
 		)
 	}
 	return (
 		<a href={redirecting_link}>
 			<div className={tile_class_name} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
-				<span className="better-carousel-image-box">
-					<img src={headshot_src}/>
-				</span>
+				<div className={avatar_card_class_name}>
+					<span className="better-carousel-image-box">
+						<img src={headshot_src}/>
+					</span>
+				</div>
 				<div className="better-carousel-text-content better-carousel-bold-title">
 					{display_name}
 				</div>
@@ -253,7 +254,7 @@ function CarouselContent({friends, cache}) {
 		)
 	}
 	const left_arrow_clickable = left != 0
-	const right_arrow_clickable = left == friends.length - max_tiles_per_row 
+	const right_arrow_clickable = left < max_left 
 	return (
 		<div className={container_class_name} ref={containerRef} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler} onClick={click_handler}>
 			{hover && <LeftArrow clickable={left_arrow_clickable}/>}

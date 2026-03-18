@@ -34,11 +34,37 @@ function App() {
 		update_num_rows	
 	}), [num_rows])
 	const friend_cache = {}
+	const presence_cache = {}
+	let fetched_presence = false
+	if (user_friends.length > 0) {
+		console.log("USER FRIENDS: ", user_friends)
+		if(!fetched_presence) {
+			fetched_presence = true
+			
+			const fetchPresenceData = async (L) => {
+				if (L >= user_friends.length) return presence_cache;
+				const processing_length = 50;
+				const R = Math.min(L + processing_length, user_friends.length);
+				const slice = user_friends.slice(L, R);
+				try {
+					const D = await dataFetching.getUserPresences(slice);
+					if (D) Object.assign(presence_cache, D);
+				} catch (e) {
+					console.error(e);
+				}
+				const cd  = 350
+				await wait(cd); 
+				console.log("presence_cache: ", presence_cache)
+				fetchPresenceData(L + processing_length)
+			};
+			fetchPresenceData()
+		}
+	}
 	return (
 		<div className={app_wrapper_class_name}>
 			<NumRowsContext.Provider value={num_rows_context_memo}>
 				<CarouselHeader num_friends={user_friends.length}/>
-				<CarouselContent friends={user_friends} cache={friend_cache}/>
+				<CarouselContent friends={user_friends} cache={friend_cache} presence_cache = {presence_cache}/>
 			</NumRowsContext.Provider>
 		</div>	
 	);

@@ -78,3 +78,28 @@ export async function getUserAvatarHeadshot(id) {
 		console.error(`Error getting user ${id} avatar headshot: `, e)
 	}
 }
+const presence_url = "https://presence.roblox.com"
+export async function getUserPresences(ids) {
+	const base_url = `${presence_url}/v1/presence/users`
+	try {
+		const response = await fetch(base_url, {
+			method: 'POST',	
+			body: JSON.stringify({userIds: ids}),
+			credentials: 'include'
+		})
+		console.log("RESPONSE: ", response)
+		const data = await response.json()
+		const editFormat = (D) => {
+			const id = D.userId
+			delete D.userId
+			return {[id]: D}
+		}
+		console.log("USERS PRESENCE: ", data)
+		const rv = data.userPresences.map(D => editFormat(D))
+		console.log("RV: ", rv)
+		return rv
+	}
+	catch (e) {
+		console.error(`Error getting presence for users ${ids}: `, e)
+	}
+}
