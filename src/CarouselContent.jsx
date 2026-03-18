@@ -61,6 +61,10 @@ function RightArrow({clickable}) {
 }
 
 const default_user_id = 156 // builderman roblox id
+const online = "ONLINE"
+const in_game = "INGAME"
+const offline = "OFFLINE"
+const in_studio = "INSTUDIO"
 function FriendTile({id, ref, cache, edit_max_tiles}) {
 	const [info, set_info] = useState({})
 	useEffect(() => {
@@ -134,6 +138,10 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 			</div>
 		)
 	}
+	const generatePresenceDiv = () => {
+		return (null)
+
+	}
 	return (
 		<a href={redirecting_link}>
 			<div className={tile_class_name} onMouseEnter={mouse_enter_handler} onMouseLeave={mouse_leave_handler}>
@@ -141,6 +149,7 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 					<span className="better-carousel-image-box">
 						<img src={headshot_src}/>
 					</span>
+					{generatePresenceDiv()}
 				</div>
 				<div className="better-carousel-text-content better-carousel-bold-title">
 					{display_name}
@@ -152,7 +161,8 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 		</a>
 	)
 }
-function CarouselContent({friends, cache}) {
+function CarouselContent({friends, cache, presence_cache}) {
+	console.log("Content presence cache: ", presence_cache)
 	const containerRef = useRef(null)
 	const tileRef = useRef(null)
 	const [max_tiles_per_row, set_max_tiles_per_row] = useState(0)

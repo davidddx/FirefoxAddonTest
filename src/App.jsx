@@ -19,8 +19,6 @@ function App() {
 		fetchData()
 
 	}, [])
-	console.log("User id" + user_id)
-	console.log("user_friends: ", user_friends)
 	const [num_rows, set_num_rows] = useState(1)
 	const update_num_rows = (val) => {
 		if (val <= 0) {
@@ -37,34 +35,69 @@ function App() {
 	const presence_cache = {}
 	let fetched_presence = false
 	if (user_friends.length > 0) {
-		console.log("USER FRIENDS: ", user_friends)
 		if(!fetched_presence) {
 			fetched_presence = true
-			
-			const fetchPresenceData = async (L) => {
-				if (L >= user_friends.length) return presence_cache;
-				const processing_length = 50;
-				const R = Math.min(L + processing_length, user_friends.length);
-				const slice = user_friends.slice(L, R);
+			const fetchPresenceData = async () => {
 				try {
-					const D = await dataFetching.getUserPresences(slice);
-					if (D) Object.assign(presence_cache, D);
+					const D = await dataFetching.getUserPresences(user_friends);
+					Object.assign(presence_cache, ...D)
 				} catch (e) {
-					console.error(e);
+					console.error("Could not fetch presence: ", e);
 				}
-				const cd  = 350
-				await wait(cd); 
-				console.log("presence_cache: ", presence_cache)
-				fetchPresenceData(L + processing_length)
 			};
 			fetchPresenceData()
 		}
 	}
+	const compareIds = (a, b) => {
+		if (!Object.hasOwn(presence_cache, a) && !Object.hasOwn(presence_cache, b)) {
+			return 0
+		}
+		if (!Object.hasOwn(presence_cache, a)) {
+			return -1
+		}
+		if (!Object.hasOwn(presence_cache, b)) {
+			return 1
+		}
+		if (presence_cache[a][dataFetching.presence] === in_game) {
+			return 1
+		}
+		if (presence_cache[b][dataFetching.presence] === in_game) {
+			return -1
+		}
+		if (presence_cache[a][dataFetching.presence] === in_studio) {
+			return 1
+		}
+		if (presence_cache[b][dataFetching.presence] === in_studio) {
+			return -1
+		}
+		if (presence_cache[a][dataFetching.presence] === online) {
+			return 1
+		}
+		if (presence_cache[b][dataFetching.presence] === online) {
+			return -1
+		}
+		if (presence_cache[a][dataFetching.presence] === invisible) {
+			return 1
+		}
+		if (presence_cache[b][dataFetching.presence] === invisible) {
+			return -1
+		}
+		if (presence_cache[a][dataFetching.presence] === offline) {
+			return 1
+		}
+		if (presence_cache[b][dataFetching.presence] === offline) {
+			return -1
+		}
+		return 1
+	}
+	const sorted_friends = user_friends.sort((a, b) => compareIds(a, b))
+	console.log("Sorted friends: ", sorted_friends)
+	console.log("Presence cache: ", presence_cache)
 	return (
 		<div className={app_wrapper_class_name}>
 			<NumRowsContext.Provider value={num_rows_context_memo}>
 				<CarouselHeader num_friends={user_friends.length}/>
-				<CarouselContent friends={user_friends} cache={friend_cache} presence_cache = {presence_cache}/>
+				<CarouselContent friends={sorted_friends} cache={friend_cache} presence_cache={presence_cache}/>
 			</NumRowsContext.Provider>
 		</div>	
 	);

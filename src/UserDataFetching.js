@@ -79,6 +79,15 @@ export async function getUserAvatarHeadshot(id) {
 	}
 }
 const presence_url = "https://presence.roblox.com"
+export const presence = "PRESENCE"
+export const online = "ONLINE"
+export const in_game = "INGAME"
+export const offline = "OFFLINE"
+export const in_studio = "INSTUDIO"
+export const invisible = "INVISIBLE"
+export const game_id = "GAME_ID"
+export const place_id = "PLACE_ID"
+export const last_location = "LAST_LOCATION"
 export async function getUserPresences(ids) {
 	const base_url = `${presence_url}/v1/presence/users`
 	try {
@@ -91,8 +100,38 @@ export async function getUserPresences(ids) {
 		const data = await response.json()
 		const editFormat = (D) => {
 			const id = D.userId
-			delete D.userId
-			return {[id]: D}
+			let curr_presence = "offline"
+			let curr_game_id = null
+			let curr_place_id = null
+			switch (D.userPresenceType) {
+				case 1:
+					curr_presence = online
+					break;
+				case 2:
+					curr_presence = in_game 
+					curr_game_id = D.gameId
+					curr_place_id = D.placeId
+					break;
+				case 3: 
+					curr_presence = in_studio
+					curr_game_id = D.gameId
+					curr_place_id = D.placeId
+					break;
+				case 4:
+					curr_presence = invisible
+					curr_game_id = D.gameId
+					curr_place_id = D.placeId
+					break;
+			}
+			const entries = {
+				[presence]: curr_presence,
+				[game_id]: curr_game_id,
+				[place_id]: curr_place_id,
+				[last_location]: D.lastLocation
+			}
+			return {
+				[id]: entries,
+			}
 		}
 		console.log("USERS PRESENCE: ", data)
 		const rv = data.userPresences.map(D => editFormat(D))
