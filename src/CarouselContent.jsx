@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useLayoutEffect, useContext} from 'react'
 import { getUserInfo, getUserAvatarHeadshot } from './UserDataFetching.js'
-import { NumRowsContext } from './AppContext.jsx'
+import { NumRowsContext, FriendDataContext } from './AppContext.jsx'
 
 function getElementTotalWidth(element) {
 	const style = window.getComputedStyle(element);
@@ -61,18 +61,15 @@ function RightArrow({clickable}) {
 }
 
 const default_user_id = 156 // builderman roblox id
-const online = "ONLINE"
-const in_game = "INGAME"
-const offline = "OFFLINE"
-const in_studio = "INSTUDIO"
-function FriendTile({id, ref, cache, edit_max_tiles}) {
+
+function FriendTile({id, ref, edit_max_tiles}) {
 	const [info, set_info] = useState({})
+	const friendDataContextVal = useContext(FriendDataContext)
 	useEffect(() => {
 		const fetchdata = async () => {
+			const cache = friendDataContextVal.friend_cache.current
+			const update_cache = friendDataContextVal.update_friend_cache
 			console.log(`cache before fetchdata on ${id}: `, cache)
-			if (cache === undefined) {
-				return
-			}
 			if (Object.hasOwn(cache, id)) {
 				set_info(cache[id])
 				return
@@ -80,7 +77,7 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 			const fetched_user_info = await getUserInfo(id)
 			if (fetched_user_info.isBanned) {
 				set_info(null)
-				cache[id] = null
+				update_cache(id, null)
 				return
 			}
 			const headshot = await getUserAvatarHeadshot(id)
@@ -88,10 +85,8 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 			console.log("Headshot: ", headshot)	
 			const entry = {...fetched_user_info, headshot: headshot}
 			set_info(entry)
-			cache[id] = entry 
+			update_cache(id, entry)
 			console.log(`cache after fetchdata on ${id}: `, cache)
-			console.log("ID: ", id)
-			console.log("Default user id: ", default_user_id)
 			if (id === default_user_id) {
 				// need to rerender parent the first time.
 				edit_max_tiles()
@@ -140,7 +135,6 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 	}
 	const generatePresenceDiv = () => {
 		return (null)
-
 	}
 	return (
 		<a href={redirecting_link}>
@@ -161,8 +155,7 @@ function FriendTile({id, ref, cache, edit_max_tiles}) {
 		</a>
 	)
 }
-function CarouselContent({friends, cache, presence_cache}) {
-	console.log("Content presence cache: ", presence_cache)
+function CarouselContent({friends, presences}) {
 	const containerRef = useRef(null)
 	const tileRef = useRef(null)
 	const [max_tiles_per_row, set_max_tiles_per_row] = useState(0)
@@ -200,7 +193,6 @@ function CarouselContent({friends, cache, presence_cache}) {
 		window.addEventListener('resize', editMaxTiles)
 		return () => window.removeEventListener('resize', editMaxTiles);
 	}, []);
-	const info_cache = cache 
 	const num_rows_context_val = useContext(NumRowsContext)
 	const num_rows = num_rows_context_val.num_rows
 	const [left, set_left] = useState(0)
@@ -258,8 +250,8 @@ function CarouselContent({friends, cache, presence_cache}) {
 		const friend_row_class_name = "better-carousel-friend-row"
 		return (
 			<div className={friend_row_class_name}>
-				{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef} cache={info_cache} edit_max_tiles={editMaxTiles}/>}
-				{row_ids.map((friend) =>  <FriendTile id={friend} key={friend} cache={info_cache}/>)} 
+				{<FriendTile id={default_user_id} key={default_user_id} ref={tileRef} edit_max_tiles={editMaxTiles}/>}
+				{row_ids.map((friend) =>  <FriendTile id={friend} key={friend}/>)} 
 			</div>
 		)
 	}

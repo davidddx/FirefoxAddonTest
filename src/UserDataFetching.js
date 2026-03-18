@@ -142,3 +142,45 @@ export async function getUserPresences(ids) {
 		console.error(`Error getting presence for users ${ids}: `, e)
 	}
 }
+export const compareIdsByPresence = (a, b, presences) => {
+		if (!Object.hasOwn(presences, a) && !Object.hasOwn(presences, b)) {
+			return 0
+		}
+		if (!Object.hasOwn(presences, a)) {
+			return -1
+		}
+		if (!Object.hasOwn(presences, b)) {
+			return 1
+		}
+		if (presences[a][presence] === in_game) {
+			return 1
+		}
+		if (presences[b][presence] === in_game) {
+			return -1
+		}
+		if (presences[a][presence] === in_studio) {
+			return 1
+		}
+		if (presences[b][presence] === in_studio) {
+			return -1
+		}
+		if (presences[a][presence] === online) {
+			return 1
+		}
+		if (presences[b][presence] === online) {
+			return -1
+		}
+		if (presences[a][presence] === invisible) {
+			return 1
+		}
+		if (presences[b][presence] === invisible) {
+			return -1
+		}
+		if (presences[a][presence] === offline) {
+			return 1
+		}
+		if (presences[b][presence] === offline) {
+			return -1
+		}
+		return 1
+	}
