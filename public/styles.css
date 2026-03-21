@@ -6,67 +6,85 @@
 	transition: background-color 0.3s ease-in-out;
 	border-radius: 12px;
 }
+
 .better-carousel-header-wrapper {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 }
+
 .better-carousel-header-leftside-wrapper {
 	display: flex;
 	flex-direction: row;
 }
+
 .better-carousel-header-rightside-wrapper {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
 }
+
 .better-carousel-header-refresh-button {
 	margin-left: 0.5em;
 }
+
 .better-carousel-header-refresh-button:hover {
 	cursor: pointer;
 }
+
 :root {
 	--extension-refresh-button-color: #000000;
 	--extension-arrow-color: #000000;
-	--extension-focused-background-color: #D8D6CF;
+	--extension-focused-background-color: #d8d6cf;
+	--extension-avatar-status-path-color: #ffffff;
 }
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		--extension-focused-background-color: #272930;
-		--extension-refresh-button-color: #FFFFFF;
-		--extension-arrow-color: #FFFFFF;
+		--extension-refresh-button-color: #ffffff;
+		--extension-arrow-color: #ffffff;
+		--extension-avatar-status-path-color: #ffffff;
 	}
 }
+
 .better-carousel-refresh-button-svg {
-    height: 1em;
-    width: 1em; /* Always give SVGs a width if you give them a height */
-    vertical-align: middle;
+	height: 1em;
+	width: 1em;
+	/* Always give SVGs a width if you give them a height */
+	vertical-align: middle;
 }
 
 /* Target the container of the friend's headshot */
 .better-carousel-image-box {
-	width: 90px;  /* Or whatever size you want */
+	width: 90px;
+	/* Or whatever size you want */
 	height: 90px;
-	overflow: hidden; /* This is the "crop" */
-	border-radius: 50%; /* If you want circular heads */
+	overflow: hidden;
+	/* This is the "crop" */
+	border-radius: 50%;
+	/* If you want circular heads */
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #e5e5e5; /* Placeholder color */
-	margin-bottom: 2px;
+	background-color: #e5e5e5;
+	/* Placeholder color */
+	/*margin-bottom: 2px;*/
 }
 
 /* Target the actual image */
 .better-carousel-image-box img {
 	width: 100% !important;
 	height: 100% !important;
-	object-fit: cover !important; /* Forces the image to fill the box without stretching */
-	object-position: center !important; /* Keeps the face in the middle */
+	object-fit: cover !important;
+	/* Forces the image to fill the box without stretching */
+	object-position: center !important;
+	/* Keeps the face in the middle */
 	display: block;
 	flex-shrink: 0px;
 }
+
 .better-carousel-content {
 	display: flex;
 	flex-direction: column;
@@ -75,32 +93,42 @@
 	padding-top: 2px;
 	position: relative;
 }
+
 .better-carousel-arrow-tile {
-	z-index: 1000; /*navigation container should have a higher z index*/
+	z-index: 1000;
+	/*navigation container should have a higher z index*/
 	position: absolute;
 	height: 100%;
 	cursor: pointer;
 	margin-bottom: 16px;
 	display: flex;
 	align-items: center;
-	background-color: #2C2C2C;
+	background-color: #2c2c2c;
 	opacity: 0.8;
-	transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
+	transition:
+		opacity 0.2s ease-in-out,
+		background-color 0.2s ease;
 }
+
 .better-carousel-arrow-tile-focused {
-	z-index: 1000; /*navigation container should have a higher z index*/
+	z-index: 1000;
+	/*navigation container should have a higher z index*/
 	position: absolute;
 	height: 100%;
 	cursor: pointer;
 	margin-bottom: 16px;
 	display: flex;
 	align-items: center;
-	background-color: #2C2C2C;
+	background-color: #2c2c2c;
 	opacity: 1;
-	transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
+	transition:
+		opacity 0.2s ease-in-out,
+		background-color 0.2s ease;
 }
+
 .better-carousel-arrow-tile-muted {
-	z-index: 1000; /*navigation container should have a higher z index*/
+	z-index: 1000;
+	/*navigation container should have a higher z index*/
 	position: absolute;
 	height: 100%;
 	cursor: default;
@@ -109,21 +137,25 @@
 	align-items: center;
 	background-color: #333333;
 	opacity: 0.7;
-
 }
+
 .better-carousel-arrow-wrapper {
 	width: 45px;
 	height: 45px;
 }
+
 .better-carousel-arrow-svg {
 	vertical-align: baseline;
 }
-.better-carousel-arrow-svg path{
-	stroke: var(--extension-arrow-color);	
+
+.better-carousel-arrow-svg path {
+	stroke: var(--extension-arrow-color);
 }
+
 .better-carousel-focused-background {
-	background-color: var(--extension-focused-background-color); 
+	background-color: var(--extension-focused-background-color);
 }
+
 .better-carousel-text-content {
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -134,10 +166,66 @@
 	font-size: 12px;
 	text-align: center;
 }
+
 .better-carousel-bold-title {
 	font-weight: 700;
 }
+
 .better-carousel-friend-row {
 	display: flex;
 	flex-direction: row;
+}
+
+.better-carousel-avatar-card {
+	margin-bottom: 2px;
+	position: relative;
+}
+
+.better-carousel-avatar-status {
+	width: 28px;
+	height: 28px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	border-radius: 50%;
+	overflow: hidden;
+}
+
+.better-carousel-avatar-status-online,
+.better-carousel-avatar-status-ingame,
+.better-carousel-avatar-status-instudio,
+.better-carousel-avatar-status-invisible {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	object-position: center !important;
+	display: block;
+	flex-shrink: 0;
+	background-color: #00a2ff !important;
+}
+
+.better-carousel-avatar-status-online {
+	background-color: #00a2ff !important;
+}
+
+.better-carousel-avatar-status-ingame {
+	background-color: #02b757 !important;
+}
+
+.better-carousel-avatar-status-instudio {
+	background-color: #f68802 !important;
+}
+
+.better-carousel-avatar-status-invisible {
+	background-color: #d3d3d3 !important;
+}
+
+.better-carousel-avatar-status-svg {
+	vertical-align: baseline;
+}
+
+.better-carousel-avatar-status-svg path,
+line,
+circle {
+	stroke: var(--extension-avatar-status-path-color);
 }

@@ -96,11 +96,10 @@ export async function getUserPresences(ids) {
 			body: JSON.stringify({userIds: ids}),
 			credentials: 'include'
 		})
-		console.log("RESPONSE: ", response)
 		const data = await response.json()
 		const editFormat = (D) => {
 			const id = D.userId
-			let curr_presence = "offline"
+			let curr_presence = offline 
 			let curr_game_id = null
 			let curr_place_id = null
 			switch (D.userPresenceType) {
@@ -133,9 +132,8 @@ export async function getUserPresences(ids) {
 				[id]: entries,
 			}
 		}
-		console.log("USERS PRESENCE: ", data)
-		const rv = data.userPresences.map(D => editFormat(D))
-		console.log("RV: ", rv)
+		const reformatted = data.userPresences.map(D => editFormat(D))
+		const rv = Object.assign({}, ...reformatted)
 		return rv
 	}
 	catch (e) {
@@ -147,40 +145,40 @@ export const compareIdsByPresence = (a, b, presences) => {
 			return 0
 		}
 		if (!Object.hasOwn(presences, a)) {
-			return -1
+			return 1
 		}
 		if (!Object.hasOwn(presences, b)) {
-			return 1
+			return -1
 		}
 		if (presences[a][presence] === in_game) {
-			return 1
+			return -1
 		}
 		if (presences[b][presence] === in_game) {
-			return -1
+			return 1
 		}
 		if (presences[a][presence] === in_studio) {
-			return 1
+			return -1
 		}
 		if (presences[b][presence] === in_studio) {
-			return -1
+			return 1
 		}
 		if (presences[a][presence] === online) {
-			return 1
+			return -1
 		}
 		if (presences[b][presence] === online) {
-			return -1
+			return 1
 		}
 		if (presences[a][presence] === invisible) {
-			return 1
+			return -1
 		}
 		if (presences[b][presence] === invisible) {
-			return -1
-		}
-		if (presences[a][presence] === offline) {
 			return 1
 		}
-		if (presences[b][presence] === offline) {
+		if (presences[a][presence] === offline) {
 			return -1
 		}
-		return 1
+		if (presences[b][presence] === offline) {
+			return 1
+		}
+		return -1
 	}

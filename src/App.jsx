@@ -18,6 +18,9 @@ function App() {
 			const user_friends_fetched = await dataFetching.getModifiedFriends(user_id_fetched, test_excluded)
 			set_user_id(user_id_fetched)
 			const fetched_presences = await dataFetching.getUserPresences(user_friends_fetched)
+			fetched_presences[3117440379][dataFetching.presence] = dataFetching.online
+			fetched_presences[335458611][dataFetching.presence] = dataFetching.in_game
+			fetched_presences[110211612][dataFetching.presence] = dataFetching.in_studio
 			const user_friends_sorted = user_friends_fetched.sort((a, b) => dataFetching.compareIdsByPresence(a, b, fetched_presences))
 			set_user_id(user_id)
 			set_user_friends(user_friends_sorted)
