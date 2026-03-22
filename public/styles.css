@@ -220,12 +220,37 @@
 	background-color: #d3d3d3 !important;
 }
 
-.better-carousel-avatar-status-svg {
+.better-carousel-avatar-status-svg-ingame {
+	stroke: #ffffff;
 	vertical-align: baseline;
 }
 
-.better-carousel-avatar-status-svg path,
-line,
-circle {
-	stroke: var(--extension-avatar-status-path-color);
+.better-carousel-avatar-status-svg-ingame path {
+	fill: none;
+	stroke: #ffffff;
+	stroke-miterlimit: 10;
+	stroke-width: 32px;
+}
+
+.better-carousel-avatar-status-svg-ingame line {
+	fill: none;
+	stroke: #ffffff;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 32px;
+}
+
+.better-carousel-avatar-status-svg-ingame circle {
+	stroke: #ffffff;
+	fill: #ffffff;
+}
+
+.better-carousel-avatar-status-svg-instudio {
+	stroke: #ffffff;
+	fill: #ffffff;
+}
+
+.better-carousel-avatar-status-svg-online {
+	stroke: #ffffff;
+	fill: #ffffff;
 }
