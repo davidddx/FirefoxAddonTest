@@ -20,6 +20,10 @@ function RefreshButton({loading_finished}) {
 
 }
 
+function RowModifiers({}) {
+
+}
+
 function CarouselHeader({num_friends, on_header_press, loading_finished}) {
 	const num_rows_context = useContext(NumRowsContext)
 	const ellipsis = "ellipsis"

@@ -199,7 +199,9 @@
 	height: 100% !important;
 	object-fit: cover !important;
 	object-position: center !important;
-	display: block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	flex-shrink: 0;
 	background-color: #00a2ff !important;
 }
@@ -219,6 +221,8 @@
 .better-carousel-avatar-status-invisible {
 	background-color: #d3d3d3 !important;
 }
+
+
 
 .better-carousel-avatar-status-svg-ingame {
 	stroke: #ffffff;
@@ -252,5 +256,17 @@
 
 .better-carousel-avatar-status-svg-online {
 	stroke: #ffffff;
-	fill: #ffffff;
+	fill: none;
+}
+.better-carousel-avatar-status-svg-instudio-wrapper {
+	width: 20px;
+	height: 20px;
+}
+.better-carousel-avatar-status-svg-online-wrapper {
+	width: 24px;
+	height: 24px;
+}
+.better-carousel-avatar-status-svg-ingame-wrapper {
+	width: 24px;
+	height: 24px;
 }
