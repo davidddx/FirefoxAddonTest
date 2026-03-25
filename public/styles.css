@@ -20,9 +20,40 @@
 
 .better-carousel-header-rightside-wrapper {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	justify-content: flex-start;
 	align-items: center;
+}
+
+.better-carousel-add-n-rows, .better-carousel-remove-n-rows {
+	border-radius: 5px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: var(--extension-row-border-color);
+	display: flex;
+	flex-direction: row;
+	margin-right: 5ch;
+	margin-left: 5ch;
+	background-color: var(--extension-row-button-colors);
+	align-items: center;
+	cursor: pointer;
+}
+.better-carousel-add-text, .better-carousel-remove-text {
+	margin-right: 1ch;
+}
+.better-carousel-rows-text {
+	margin-left: 1ch;
+}
+.better-carousel-add-n-rows {
+	margin-right: 2.5ch;
+}
+.better-carousel-remove-n-rows {
+	margin-left: 2.5ch;
+}
+
+.better-carousel-add-n-rows-input, .better-carousel-remove-n-rows-input {
+	width: 2.5ch;
+	text-align: center;
 }
 
 .better-carousel-header-refresh-button {
@@ -38,6 +69,8 @@
 	--extension-arrow-color: #000000;
 	--extension-focused-background-color: #d8d6cf;
 	--extension-avatar-status-path-color: #ffffff;
+	--extension-row-button-color: #555555;
+	--extension-row-button-color: #cccccc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,6 +79,8 @@
 		--extension-refresh-button-color: #ffffff;
 		--extension-arrow-color: #ffffff;
 		--extension-avatar-status-path-color: #ffffff;
+		--extension-row-button-color: #333333;
+		--extension-row-border-color: #555555;
 	}
 }
 

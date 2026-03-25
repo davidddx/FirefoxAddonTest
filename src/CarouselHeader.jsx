@@ -20,75 +20,101 @@ function RefreshButton({loading_finished}) {
 
 }
 
-function RowModifiers({}) {
+function HeaderRightSide({}) {
+	const add_text = "Add"
+	const remove_text = "Remove"
+	const rows_text = "Row(s)"
+	const [input_val, set_input_val] = useState(1)
+	const on_change = (e) => {
+		console.log("Changed input.")
+		console.log("Target: ", e.target)
+	}
+	const default_input_val = "1"
+	const wrapper_classname = "better-carousel-header-rightside-wrapper"
+	const add_n_rows_classname = "better-carousel-add-n-rows"
+	const add_n_rows_input_classname = "better-carousel-add-n-rows-input"
+	const remove_n_rows_classname = "better-carousel-remove-n-rows"
+	const remove_n_rows_input_classname = "better-carousel-remove-n-rows-input"
+	const num_rows_ctx = useContext(NumRowsContext)
+	const add_n_rows = () => {
+		const new_rows = input_val + num_rows_ctx.num_rows 
+		num_rows_ctx.update_num_rows(new_rows)
+	}
+	const remove_n_rows = () => {
+		const new_rows = num_rows_ctx.num_rows - input_val 
+		num_rows_ctx.update_num_rows(new_rows)
+	}
+	const on_click = (e) => {
+		if(e.target.className === wrapper_classname) {
+			return
+		}
+		if(e.target.className === remove_n_rows_input_classname || 
+			e.target.className === add_n_rows_input_classname) {
+			return
+		}
+		console.log("Clicked ", e.target)
+		if(e.target.className === add_n_rows_classname) {
+			add_n_rows()
+			return
+		}
+		if (e.target.className === remove_n_rows_classname) {
+			remove_n_rows()
+			return
+		}
+		const closest_addn_rows = e.target.closest(`.${add_n_rows_classname}`)
+		const closest_removen_rows = e.target.closest(`.${remove_n_rows_classname}`)
+		if(closest_addn_rows === null &&
+			closest_removen_rows === null) {
+			return
+		}
+		if (closest_addn_rows) {
+			add_n_rows()
+		}
+		if (closest_removen_rows) {
+			remove_n_rows()
+		}
+	}
+	
+	return (
+		<div className={wrapper_classname} onClick={on_click}>
+			<div className={add_n_rows_classname}>
+				<div className="better-carousel-add-text">
+					{add_text}
+				</div>
+				<input className={add_n_rows_input_classname} value={default_input_val}/>
+				<div className="better-carousel-rows-text">
+					{rows_text}
+				</div>
+			</div>
+			<div className={remove_n_rows_classname}>
+				<div className="better-carousel-remove-text">
+				{remove_text}
+				</div>
+				<input className={remove_n_rows_input_classname} value={default_input_val}/>
+				<div className="better-carousel-rows-text">
+					{rows_text}
+				</div>
+			</div>
+		</div>
+	)
+}
 
+function HeaderLeftSide({num_friends, loading_finished}) {
+	return (
+		<div className="better-carousel-header-leftside-wrapper">
+			<div className="better-carousel-header-main">
+				<h2>Friends ({num_friends})</h2>
+			</div>
+			<RefreshButton loading_finished={loading_finished} />
+		</div>
+	);
 }
 
 function CarouselHeader({num_friends, on_header_press, loading_finished}) {
-	const num_rows_context = useContext(NumRowsContext)
-	const ellipsis = "ellipsis"
-	const add_one = "add-one"
-	const add_five = "add-five"
-	const add_ten = "add-ten"
-	const remove_one = "remove-one"
-	const remove_five = "remove-five"
-	const remove_ten = "remove-ten"
-	const selectbox_change_handler = (e) => {
-		console.log("select box change found")
-		console.log("select box change event target: ", e.target)
-		console.log("select box change event target value: ", e.target.value)
-		let offset = 0
-		switch (e.target.value) {
-			case add_one:
-				offset = 1
-				break;
-			case add_five:
-				offset = 5
-				break;
-			case add_ten:
-				offset = 10
-				break;
-			case remove_one:
-				offset = -1
-				break;
-			case remove_five:
-				offset = -5
-				break;
-			case remove_ten: 
-				offset = -10
-				break;
-		}
-		if(offset === 0) {
-			return
-		}
-		num_rows_context.update_num_rows(num_rows_context.num_rows + offset)
-	}
 	return (
 		<div className="better-carousel-header-wrapper" onClick={on_header_press}>
-			<div className="better-carousel-header-leftside-wrapper">
-				<div className="better-carousel-header-main">
-					<h2>
-						Friends ({num_friends})
-					</h2>
-				</div>
-				<RefreshButton loading_finished={loading_finished}/>
-			</div>
-			<div className="better-carousel-header-rightside-wrapper">
-				<div className="better-carousel-rightside-labels">
-					<label for="row-operations">
-						Modify Rows: 
-					</label>
-					<select id="row-operations" onChange={selectbox_change_handler}>
-						<option value={ellipsis}>...</option>
-						<option value={add_one}>Add 1 Row</option>
-						<option value={add_five}>Add 5 Rows</option>
-						<option value={add_ten}>Add 10 Rows</option>
-						<option value={remove_one}>Remove 1 Row</option>
-						<option value={remove_five}>Remove 5 Rows</option>
-						<option value={remove_ten}>Remove 10 Rows</option>
-					</select>
-				</div>
-			</div>
+			<HeaderLeftSide num_friends={num_friends} loading_finished={loading_finished}/>
+			<HeaderRightSide/>
 		</div>
 	)
 
