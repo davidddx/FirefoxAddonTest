@@ -1,5 +1,5 @@
 import {useState, useEffect, useContext} from 'react'
-import { NumRowsContext } from './AppContext.jsx'
+import { NumRowsContext, MaxNumRowsContext } from './AppContext.jsx'
 
 function RefreshButton({loading_finished}) {
 	if(!loading_finished) {
@@ -24,24 +24,70 @@ function HeaderRightSide({}) {
 	const add_text = "Add"
 	const remove_text = "Remove"
 	const rows_text = "Row(s)"
-	const [input_val, set_input_val] = useState(1)
-	const on_change = (e) => {
-		console.log("Changed input.")
-		console.log("Target: ", e.target)
+	const [add_input_val, set_add_input_val] = useState("1")
+	const [remove_input_val, set_remove_input_val] = useState("1")
+	const max_input_val = 10
+	const min_input_val = 1
+	const on_add_input_change = (e) => {
+		const val = e.target.value 
+		if (val === "") {
+			set_add_input_val("")
+			return
+		}
+		const sanitized_val = val.replace(/\\D/g, ''); 
+		let val_to_set = parseInt(sanitized_val)
+		if (isNaN(val_to_set)) {
+			return
+		}
+		if (val_to_set < min_input_val) {
+			val_to_set = min_input_val
+		}
+		if (val_to_set > max_input_val) {
+			val_to_set = max_input_val
+		}
+		set_add_input_val(val_to_set)
 	}
-	const default_input_val = "1"
+	const on_remove_input_change = (e) => {
+		const val = e.target.value 
+		if (val === "") {
+			set_remove_input_val("")
+			return
+		}
+		const sanitized_val = val.replace(/\\D/g, ''); 
+		let val_to_set = parseInt(sanitized_val)
+		if (isNaN(val_to_set)) {
+			return
+		}
+		if (val_to_set < min_input_val) {
+			val_to_set = min_input_val
+		}
+		if (val_to_set > max_input_val) {
+			val_to_set = max_input_val
+		}
+		set_remove_input_val(val_to_set)
+	}
 	const wrapper_classname = "better-carousel-header-rightside-wrapper"
 	const add_n_rows_classname = "better-carousel-add-n-rows"
 	const add_n_rows_input_classname = "better-carousel-add-n-rows-input"
 	const remove_n_rows_classname = "better-carousel-remove-n-rows"
 	const remove_n_rows_input_classname = "better-carousel-remove-n-rows-input"
 	const num_rows_ctx = useContext(NumRowsContext)
-	const add_n_rows = () => {
-		const new_rows = input_val + num_rows_ctx.num_rows 
-		num_rows_ctx.update_num_rows(new_rows)
+	const max_num_rows_ctx = useContext(MaxNumRowsContext)
+	console.log(`num rows ctx: `, num_rows_ctx)
+	const add_n_rows = (e) => {
+		const new_rows = parseInt(add_input_val) + num_rows_ctx.num_rows 
+		let upd_value = new_rows
+		if (new_rows > max_num_rows_ctx.max_num_rows) {
+			upd_value = max_num_rows_ctx.max_num_rows 
+			console.log(`new rows ${new_rows} > max num rows ${max_num_rows_ctx.max_num_rows}`)
+		}
+		else {
+			console.log(`new rows ${new_rows} <= max num rows ${max_num_rows_ctx.max_num_rows}`)
+		}
+		num_rows_ctx.update_num_rows(upd_value)
 	}
 	const remove_n_rows = () => {
-		const new_rows = num_rows_ctx.num_rows - input_val 
+		const new_rows = num_rows_ctx.num_rows - parseInt(remove_input_val) 
 		num_rows_ctx.update_num_rows(new_rows)
 	}
 	const on_click = (e) => {
@@ -81,7 +127,7 @@ function HeaderRightSide({}) {
 				<div className="better-carousel-add-text">
 					{add_text}
 				</div>
-				<input className={add_n_rows_input_classname} value={default_input_val}/>
+				<input className={add_n_rows_input_classname} value={add_input_val} onChange={on_add_input_change}/>
 				<div className="better-carousel-rows-text">
 					{rows_text}
 				</div>
@@ -90,7 +136,7 @@ function HeaderRightSide({}) {
 				<div className="better-carousel-remove-text">
 				{remove_text}
 				</div>
-				<input className={remove_n_rows_input_classname} value={default_input_val}/>
+				<input className={remove_n_rows_input_classname} value={remove_input_val} onChange={on_remove_input_change}/>
 				<div className="better-carousel-rows-text">
 					{rows_text}
 				</div>
@@ -110,10 +156,23 @@ function HeaderLeftSide({num_friends, loading_finished}) {
 	);
 }
 
-function CarouselHeader({num_friends, on_header_press, loading_finished}) {
+function HeaderSearchBar({search_name, set_search_name}) {
+	const on_input_change = (e) => {
+		set_search_name(e.target.value)
+	}
+	const placeholder_text = "Search Friend..."
+	return (
+		<div className="better-carousel-searchbar-wrapper">
+			<input className="better-carousel-searchbar" value={search_name} placeholder={placeholder_text} onChange={on_input_change}/>
+		</div>
+	)
+}
+
+function CarouselHeader({num_friends, on_header_press, loading_finished, friend_search_name, set_friend_search_name}) {
 	return (
 		<div className="better-carousel-header-wrapper" onClick={on_header_press}>
 			<HeaderLeftSide num_friends={num_friends} loading_finished={loading_finished}/>
+			<HeaderSearchBar search_name={friend_search_name} set_search_name={set_friend_search_name}/>
 			<HeaderRightSide/>
 		</div>
 	)

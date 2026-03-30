@@ -6,7 +6,7 @@ import {
 	useContext,
 } from "react";
 import { getUserInfo, getUserAvatarHeadshot } from "./UserDataFetching.js";
-import { NumRowsContext, FriendDataContext } from "./AppContext.jsx";
+import { NumRowsContext, FriendDataContext, MaxNumRowsContext } from "./AppContext.jsx";
 import * as dataFetching from "./UserDataFetching.js";
 
 function getElementTotalWidth(element) {
@@ -353,20 +353,39 @@ function CarouselContent({ friends, presences }) {
 		const total_fit = horizontal_fit;
 		return total_fit;
 	};
+	const max_num_rows_context_val = useContext(MaxNumRowsContext)
+	console.log("max num rows context val=", max_num_rows_context_val)
+	const friends_ref = useRef(friends) // needed for editMaxTiles to work properly
 	const editMaxTiles = () => {
 		const fit = calculateFit();
+		if(fit > 0) {
+			//console.log("Friends length: ", num_friends)
+			const num_friends = friends_ref.current.length 
+			console.log("num FRIENDS in edit max tiles: ", num_friends)
+			console.log("Fit: ", fit)
+			const max_num_rows = Math.ceil(num_friends / fit)
+			max_num_rows_context_val.update_max_num_rows(max_num_rows)
+			console.log("Calculated max num rows=", max_num_rows)
+		}
 		set_max_tiles_per_row(fit);
 	};
 	useLayoutEffect(() => {
+		console.log("Use layout effect from carousel content running..")
+		friends_ref.current = friends
 		const total_fit = calculateFit();
 		set_max_tiles_per_row(total_fit);
 		console.log("Tile fit: ", total_fit);
 		window.addEventListener("resize", editMaxTiles);
 		return () => window.removeEventListener("resize", editMaxTiles);
-	}, []);
+	}, [friends]);
 	const num_rows_context_val = useContext(NumRowsContext);
 	const num_rows = num_rows_context_val.num_rows;
 	const [left, set_left] = useState(0);
+	if (num_rows > max_num_rows_context_val.max_num_rows) {
+		num_rows_context_val.update_num_rows(max_num_rows_context_val.max_num_rows)
+		console.log("num rows > max num rows")
+	}
+	console.log("num rows context val=", num_rows_context_val)
 	const max_left = Math.max(
 		0,
 		friends.length - max_tiles_per_row * num_rows

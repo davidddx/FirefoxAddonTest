@@ -258,7 +258,6 @@
 }
 
 
-
 .better-carousel-avatar-status-svg-ingame {
 	stroke: #ffffff;
 	vertical-align: baseline;
@@ -304,4 +303,17 @@
 .better-carousel-avatar-status-svg-ingame-wrapper {
 	width: 24px;
 	height: 24px;
+}
+.better-carousel-searchbar-wrapper {
+	display: flex;
+	align-items: center;
+
+}
+.better-carousel-searchbar {
+	border-radius: 5px;
+	border-color: var(--extension-row-border-color);
+	border-width: 2px;
+	border-style: solid;
+	display: flex;
+	width: 20ch;
 }
