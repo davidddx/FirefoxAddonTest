@@ -1,6 +1,18 @@
 {
 	"manifest_version": 3,
-	"name": "Better-Roblox-Friend-Carousel",
+	"name": "Better Roblox Friend Carousel",
+	"action": {
+		"default_icon": {
+			"16": "icon/favicon-16x16.png",
+			"32": "icon/favicon-32x32.png",
+			"48": "icon/favicon-48x48.png",
+			"180": "icon/favicon-180x180.png",
+			"192": "icon/favicon-192x192.png",
+			"512": "icon/favicon-512x512.png"
+		},
+		"default_title": "Better Roblox Friend Carousel",
+		"default_popup": "popup/popup.html"
+	},
 	"version": "1.0",
 	"permissions": ["storage"],
 	"description": "Better friend carousel for roblox.com/home",

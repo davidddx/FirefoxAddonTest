@@ -6,7 +6,7 @@ import {
 	useContext,
 } from "react";
 import { getUserInfo, getUserAvatarHeadshot } from "./UserDataFetching.js";
-import { NumRowsContext, FriendDataContext, MaxNumRowsContext } from "./AppContext.jsx";
+import { NumRowsContext, MaxNumRowsContext } from "./AppContext.jsx";
 import * as dataFetching from "./UserDataFetching.js";
 
 function getElementTotalWidth(element) {
@@ -173,7 +173,7 @@ function InstudioLogo({}) {
 }
 
 function PresenceLogo({ presence }) {
-	console.log("Presence: ", presence);
+	//console.log("Presence: ", presence);
 	const getSvgByPresence = (P) => {
 		switch (P[dataFetching.presence]) {
 			case dataFetching.offline:
@@ -219,53 +219,17 @@ function PresenceLogo({ presence }) {
 
 const default_user_id = 156; // builderman roblox id
 
-function FriendTile({ id, ref, edit_max_tiles, presence }) {
-	const [info, set_info] = useState({});
-	const friendDataContextVal = useContext(FriendDataContext);
-	useEffect(() => {
-		const fetchdata = async () => {
-			const cache = friendDataContextVal.friend_cache.current;
-			const update_cache =
-				friendDataContextVal.update_friend_cache;
-			console.log(`cache before fetchdata on ${id}: `, cache);
-			if (Object.hasOwn(cache, id)) {
-				set_info(cache[id]);
-				return;
-			}
-			const fetched_user_info = await getUserInfo(id);
-			if (fetched_user_info.isBanned) {
-				set_info(null);
-				update_cache(id, null);
-				return;
-			}
-			const headshot = await getUserAvatarHeadshot(id);
-			console.log("fetched_user_info: ", fetched_user_info);
-			console.log("Headshot: ", headshot);
-			const entry = {
-				...fetched_user_info,
-				headshot: headshot,
-			};
-			set_info(entry);
-			update_cache(id, entry);
-			console.log(`cache after fetchdata on ${id}: `, cache);
-			if (id === default_user_id) {
-				// need to rerender parent the first time.
-				edit_max_tiles();
-			}
-		};
-		console.log("Fetch data for id ", id);
-		fetchdata();
-	}, [id]);
+function FriendTile({ id, ref, presence, data }) {
 	let headshot_src = "";
 	let username = "";
 	let display_name = "";
-	if (info !== undefined) {
-		headshot_src = info.headshot;
-		username = info.name;
-		display_name = info.displayName;
+	if (data !== undefined) {
+		if (!Object.hasOwn(data, id)) {
+			headshot_src = data.headshot
+			username = data.name
+			display_name = data.displayName
+		}
 	}
-	console.assert(info !== null, "info === null implies a banned user");
-
 	const [hover, set_hover] = useState(false);
 	const mouse_enter_handler = (e) => {
 		set_hover(true);
@@ -281,7 +245,7 @@ function FriendTile({ id, ref, edit_max_tiles, presence }) {
 	}
 	const redirecting_link = `https://www.roblox.com/users/${id}/profile`;
 	const avatar_card_class_name = "better-carousel-avatar-card";
-	if (ref !== undefined) {
+	if (id === default_user_id) {
 		console.log(" ref not undefined ");
 		console.log(" id: ", id);
 		return (
@@ -324,9 +288,10 @@ function FriendTile({ id, ref, edit_max_tiles, presence }) {
 		</a>
 	);
 }
-function CarouselContent({ friends, presences }) {
+function CarouselContent({ friends, presences, friend_data  }) {
 	const containerRef = useRef(null);
 	const tileRef = useRef(null);
+	console.log("CAROUSEL CONTENT FRIEND DATA: ", friend_data)
 	const [max_tiles_per_row, set_max_tiles_per_row] = useState(0);
 	const [hover, set_hover] = useState(false);
 	const mouse_enter_handler = (e) => {
@@ -343,7 +308,6 @@ function CarouselContent({ friends, presences }) {
 		console.log("Container ref: ", containerRef);
 		console.log("Tile ref: ", tileRef);
 		if (!containerRef.current) return 0;
-		console.log("Tile ref: ", tileRef);
 		if (!tileRef.current) return 0;
 		const container_width = getElementTotalWidth(
 			containerRef.current
@@ -355,26 +319,22 @@ function CarouselContent({ friends, presences }) {
 	};
 	const max_num_rows_context_val = useContext(MaxNumRowsContext)
 	console.log("max num rows context val=", max_num_rows_context_val)
-	const friends_ref = useRef(friends) // needed for editMaxTiles to work properly
 	const editMaxTiles = () => {
 		const fit = calculateFit();
 		if(fit > 0) {
-			//console.log("Friends length: ", num_friends)
-			const num_friends = friends_ref.current.length 
+			const num_friends = friends.length 
 			console.log("num FRIENDS in edit max tiles: ", num_friends)
 			console.log("Fit: ", fit)
 			const max_num_rows = Math.ceil(num_friends / fit)
 			max_num_rows_context_val.update_max_num_rows(max_num_rows)
 			console.log("Calculated max num rows=", max_num_rows)
 		}
+		console.log("Fit calculated: ", fit)
 		set_max_tiles_per_row(fit);
 	};
 	useLayoutEffect(() => {
 		console.log("Use layout effect from carousel content running..")
-		friends_ref.current = friends
-		const total_fit = calculateFit();
-		set_max_tiles_per_row(total_fit);
-		console.log("Tile fit: ", total_fit);
+		editMaxTiles()	
 		window.addEventListener("resize", editMaxTiles);
 		return () => window.removeEventListener("resize", editMaxTiles);
 	}, [friends]);
@@ -394,6 +354,7 @@ function CarouselContent({ friends, presences }) {
 		// needs a rerender in this case
 		set_left(max_left);
 	}
+	console.log("MAX TILES PER ROW: ", max_tiles_per_row)
 	const sliced_friends = friends.slice(left, left + max_tiles_per_row);
 	let left_ptr = left;
 	const carousel_rows = [];
@@ -451,21 +412,25 @@ function CarouselContent({ friends, presences }) {
 	console.log("sliced friends: ", sliced_friends);
 	const generate_friend_row = (row_ids) => {
 		const friend_row_class_name = "better-carousel-friend-row";
+		if (row_ids.length == 1 && row_ids[0] == default_user_id) {
+			return (
+				<div className={friend_row_class_name}>
+				<FriendTile
+					id={default_user_id}
+					key={default_user_id}
+					ref={tileRef}
+				/>
+				</div>
+			)
+		}
 		return (
 			<div className={friend_row_class_name}>
-				{
-					<FriendTile
-						id={default_user_id}
-						key={default_user_id}
-						ref={tileRef}
-						edit_max_tiles={editMaxTiles}
-					/>
-				}
 				{row_ids.map((friend) => (
 					<FriendTile
 						id={friend}
 						key={friend}
 						presence={presences[friend]}
+						data={friend_data[friend]}
 					/>
 				))}
 			</div>
@@ -484,6 +449,7 @@ function CarouselContent({ friends, presences }) {
 			{hover && (
 				<LeftArrow clickable={left_arrow_clickable} />
 			)}
+			{generate_friend_row([default_user_id])}
 			{carousel_rows.map((row) => generate_friend_row(row))}
 			{hover && (
 				<RightArrow clickable={right_arrow_clickable} />

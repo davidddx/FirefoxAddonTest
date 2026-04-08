@@ -17,7 +17,6 @@ export async function getUserId() {
 // id: user id
 export async function getUserFriends(id) {
 	try {
-		console.log(id)
 		const url = `${friends_api}/v1/users/${id}/friends`
 		const authResponse = await fetch(url, {
 			credentials: 'include' 
@@ -36,7 +35,6 @@ export async function getUserInfo(id) {
 	try {
 		const response = await fetch(url, {credentials: 'include'})
 		const data = await response.json()
-		console.log("data: ", data)
 		return data
 	}
 	catch (e) {
@@ -76,6 +74,20 @@ export async function getUserAvatarHeadshot(id) {
 	}
 	catch (e) {
 		console.error(`Error getting user ${id} avatar headshot: `, e)
+	}
+}
+export async function getUserInfoAndHeadshot(id) {
+	try {
+		const info = await getUserInfo(id)
+		const headshot = await getUserAvatarHeadshot(id)
+		const rv = {
+			...info,
+			headshot: headshot,
+		}
+		return rv
+	}
+	catch(e) {
+		console.error(`Error getting user ${id} headshot and info: `, e) 
 	}
 }
 const presence_url = "https://presence.roblox.com"
@@ -141,44 +153,45 @@ export async function getUserPresences(ids) {
 	}
 }
 export const compareIdsByPresence = (a, b, presences) => {
-		if (!Object.hasOwn(presences, a) && !Object.hasOwn(presences, b)) {
-			return 0
-		}
-		if (!Object.hasOwn(presences, a)) {
-			return 1
-		}
-		if (!Object.hasOwn(presences, b)) {
-			return -1
-		}
-		if (presences[a][presence] === in_game) {
-			return -1
-		}
-		if (presences[b][presence] === in_game) {
-			return 1
-		}
-		if (presences[a][presence] === in_studio) {
-			return -1
-		}
-		if (presences[b][presence] === in_studio) {
-			return 1
-		}
-		if (presences[a][presence] === online) {
-			return -1
-		}
-		if (presences[b][presence] === online) {
-			return 1
-		}
-		if (presences[a][presence] === invisible) {
-			return -1
-		}
-		if (presences[b][presence] === invisible) {
-			return 1
-		}
-		if (presences[a][presence] === offline) {
-			return -1
-		}
-		if (presences[b][presence] === offline) {
-			return 1
-		}
+	if (!Object.hasOwn(presences, a) && !Object.hasOwn(presences, b)) {
+		return 0
+	}
+	if (!Object.hasOwn(presences, a)) {
+		return 1
+	}
+	if (!Object.hasOwn(presences, b)) {
 		return -1
 	}
+	if (presences[a][presence] === in_game) {
+		return -1
+	}
+	if (presences[b][presence] === in_game) {
+		return 1
+	}
+	if (presences[a][presence] === in_studio) {
+		return -1
+	}
+	if (presences[b][presence] === in_studio) {
+		return 1
+	}
+	if (presences[a][presence] === online) {
+		return -1
+	}
+	if (presences[b][presence] === online) {
+		return 1
+	}
+	if (presences[a][presence] === invisible) {
+		return -1
+	}
+	if (presences[b][presence] === invisible) {
+		return 1
+	}
+	if (presences[a][presence] === offline) {
+		return -1
+	}
+	if (presences[b][presence] === offline) {
+		return 1
+	}
+	return -1
+}
+

@@ -88,7 +88,11 @@ function HeaderRightSide({}) {
 	}
 	const remove_n_rows = () => {
 		const new_rows = num_rows_ctx.num_rows - parseInt(remove_input_val) 
-		num_rows_ctx.update_num_rows(new_rows)
+		let upd_value = new_rows
+		if (new_rows < 1) {
+			upd_value = 1
+		}
+		num_rows_ctx.update_num_rows(upd_value)
 	}
 	const on_click = (e) => {
 		if(e.target.className === wrapper_classname) {

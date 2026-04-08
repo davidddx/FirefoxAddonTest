@@ -1,0 +1,27 @@
+:root {
+	--text-color: #121215;
+	--background-color: rgb(247, 247, 248);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background-color: #121215;
+		--text-color: rgb(247, 247, 248);
+	}
+}
+
+.popup-header {
+	font-weight: bold;
+	text-align: center;
+}
+
+.popup-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+body {
+	background-color: var(--background-color);
+	color: var(--text-color);
+}
