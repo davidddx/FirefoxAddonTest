@@ -80,9 +80,9 @@ function App() {
 				return true	
 			}
 			const data = friend_data[friend]
-			const displayName = data.displayName
-			const name = data.name
-			return name.search(search_name) !== -1 || displayName.search(search_name) !== -1 
+			const displayName = data.displayName.toLowerCase()
+			const name = data.name.toLowerCase()
+			return name.search(search_name.toLowerCase()) !== -1 || displayName.search(search_name.toLowerCase()) !== -1 
 		}
 		filtered_friends = user_friends.filter((friend) => filter_function(friend)) 
 	}

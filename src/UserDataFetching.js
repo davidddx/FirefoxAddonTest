@@ -29,6 +29,38 @@ export async function getUserFriends(id) {
 		console.error("Communication error:", e);
 	}
 }
+
+export async function getUserFollowers(id) {
+	try {
+		const url = `${friends_api}/v1/users/${id}/followers`
+		const authResponse = await fetch(url, {
+			credentials: 'include' 
+		});
+		const data = await authResponse.json();
+		const follower_ids = data.data.map(entry => entry.id)
+		return follower_ids
+	}
+	catch (e) {
+		console.error("communication error:", e)
+		return null
+	}
+}
+
+export async function getUserFollowing(id) {
+	try {
+		const url = `${friends_api}/v1/users/${id}/followings`
+		const authResponse = await fetch(url, {
+			credentials: 'include' 
+		});
+		const data = await authResponse.json();
+		const following_ids = data.data.map(entry => entry.id)
+		return following_ids
+	}
+	catch (e) {
+		console.error("communication error: ", e)
+	}
+}
+
 // id: user id
 export async function getUserInfo(id) {
 	const url = `${users_api}/v1/users/${id}`
