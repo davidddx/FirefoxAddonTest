@@ -8,7 +8,6 @@ function App() {
 	const [user_id, set_user_id] = useState(null)
 	const [user_friends, set_user_friends] = useState([])
 	const [friends_presences, set_friends_presences] = useState({})
-	const test_excluded = [] 
 	const [loading_finished, set_loading_finished] = useState(false)
 	const [refresh_button_pressed, set_refresh_button_pressed] = useState(true)
 	const [num_rows, set_num_rows] = useState(1)
@@ -38,8 +37,21 @@ function App() {
 		const fetchData = async () => {
 			set_loading_finished(false)
 			const user_id_fetched = await dataFetching.getUserId()
-			const user_friends_fetched = await dataFetching.getModifiedFriends(user_id_fetched, test_excluded)
 			set_user_id(user_id_fetched)
+			const user_friends_fetched = []
+			const show_followers = await dataFetching.showFollowers()
+			const show_following = await dataFetching.showFollowing()
+			if(show_followers) {
+				const user_followers_fetched = await dataFetching.getUserFollowers(user_id_fetched)
+				user_friends_fetched.push(...user_followers_fetched)
+			}
+			if(show_following) {
+				const user_following_fetched = await dataFetching.getUserFollowing(user_id_fetched)
+				user_friends_fetched.push(...user_following_fetched)
+			}
+			user_friends_fetched.push(...(await dataFetching.getModifiedFriends(user_id_fetched)))
+
+			console.log("USER FRIENDS FETCHED: ", user_friends_fetched)
 			const fetched_presences = await dataFetching.getUserPresences(user_friends_fetched)
 			const user_friends_sorted = user_friends_fetched.sort((a, b) => dataFetching.compareIdsByPresence(a, b, fetched_presences))
 			user_friends_sorted.forEach((F) => {
