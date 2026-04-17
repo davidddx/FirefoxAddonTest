@@ -1,15 +1,28 @@
 :root {
-	--text-color: #121215;
-	--background-color: rgb(247, 247, 248);
+	color-scheme: light dark;
+	--bg-dark: light-dark(hsl(0 0% 90%), hsl(336 0% 1%));
+	--bg: light-dark(hsl(0 0% 95%), hsl(330 0% 4%));
+	--bg-light: light-dark(hsl(300 50% 100%), hsl(0 0% 9%));
+	--text: light-dark(hsl(330 0% 4%), hsl(0 0% 95%));
+	--text-muted: light-dark(hsl(0 0% 28%), hsl(300 0% 69%));
+	--highlight: light-dark(hsl(300 50% 100%), hsl(330 0% 39%));
+	--border: light-dark(hsl(300 0% 50%), hsl(0 0% 28%));
+	--border-muted: light-dark(hsl(340 0% 62%), hsl(300 0% 18%));
+	--primary: light-dark(hsl(240 32% 37%), hsl(237 71% 79%));
+	--secondary: light-dark(hsl(53 100% 12%), hsl(52 41% 57%));
+	--danger: light-dark(hsl(9 21% 41%), hsl(9 26% 64%));
+	--warning: light-dark(hsl(52 23% 34%), hsl(52 19% 57%));
+	--success: light-dark(hsl(147 19% 36%), hsl(146 17% 59%));
+	--info: light-dark(hsl(217 22% 41%), hsl(217 28% 65%));
 }
+body {
+	margin: 0px;
+	border: 0px;
+	background: var(--bg-dark);
+	color: var(--text);
+	font-family: "Builder Sans";
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background-color: #121215;
-		--text-color: rgb(247, 247, 248);
-	}
 }
-
 .popup-header {
 	font-weight: bold;
 	text-align: center;
@@ -19,9 +32,106 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	max-height: 300px;
+	overflow-y: auto;
 }
 
-body {
-	background-color: var(--background-color);
-	color: var(--text-color);
+h2{
+	font-size: 20px;
+	font-weight: 700;
+	margin-top: 0px;
+	margin-bottom: 15px;
+}
+h3 {
+	font-size: 18px;
+	font-weight: 700;
+	margin-top: 0px;
+	margin-bottom: 12px;
+
+}
+h4 {
+	font-size: 16px;
+	font-weight: 700;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.pressable-option, .selected-pressable-option {
+	width: fit-content;
+	transition: background-color 0.2s ease-in-out;
+	user-select: none;
+	padding: 3px;
+	font-size: 15px;
+	color: var(--text);
+	border-width: 2px;
+	border-style: solid;
+	border-color: var(--border-muted);
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.pressable-option:hover, .selected-pressable-option:hover {
+	background-color: var(--highlight);
+}
+
+.pressable-option {
+	background-color: var(--bg);
+	color: var(--text-muted);
+}
+.selected-pressable-option {
+	background-color: var(--highlight);
+	border-color: var(--border);
+}
+
+.popup-section {
+	min-width: 50ch;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	border-width: 2px;
+	border-style: solid;
+	border-color: var(--border);
+	border-radius: 2px;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.popup-subsection-header {
+	margin-bottom: 8px;	
+}
+.popup-subsection {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-bottom: 5px;
+
+}
+
+.popup-section-header {
+	text-align: center;
+}
+.popup-section-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.input-box-addable-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+}
+.input-box-addable-wrapper-input input{
+	background-color: var(--bg);
+}
+.input-box-addable-wrapper-buttons {
+	margin-top: 4px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+.input-box-addable-wrapper-buttons div{
+	margin-right: 5px;
+	margin-left: 5px;
 }

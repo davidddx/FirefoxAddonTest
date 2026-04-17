@@ -2,9 +2,9 @@ import _React from 'react'
 function PopupHeader() {
 	return (
 		<div className="PopupHeader">
-			<h3>
+			<h2>
 				Better Friend Carousel
-			</h3>
+			</h2>
 		</div>
 	)
 }

@@ -7,6 +7,8 @@ import {
 } from "react";
 import { getUserInfo, getUserAvatarHeadshot } from "./UserDataFetching.js";
 import { NumRowsContext, MaxNumRowsContext } from "./AppContext.jsx";
+import {LocaleContext, TimezoneContext} from "./LocaleTimezoneContext.jsx";
+import * as formatting from './formatting.js'
 import * as dataFetching from "./UserDataFetching.js";
 
 function getElementTotalWidth(element) {
@@ -219,7 +221,7 @@ function PresenceLogo({ presence }) {
 
 const default_user_id = 156; // builderman roblox id
 
-function FriendTile({ id, ref, presence, data }) {
+function FriendTile({ id, ref, presence, data, show_info }) {
 	let headshot_src = "";
 	let username = "";
 	let display_name = "";
@@ -265,6 +267,28 @@ function FriendTile({ id, ref, presence, data }) {
 			</div>
 		);
 	}
+	let cleaner_date_created = null
+	const locale = useContext(LocaleContext)
+	const timezone = useContext(TimezoneContext)
+	const created_at = data?.created || "";
+	if(data && show_info[dataFetching.show_account_create_date_keyname] && created_at) {
+		try {
+			const show = show_info[dataFetching.show_account_create_date_keyname]
+			console.log("SHOW: ", show)
+			if (show) {
+				cleaner_date_created = formatting
+					.formatDatetime(data.created, 
+						locale, timezone)
+				console.log("Cleaner_date_created ", cleaner_date_created)
+			}
+		}
+		catch (e) {
+			console.error("Failed to get date: ", e)
+		}
+	}
+	else {
+		console.log("Undefined data in friendtile")
+	}
 	return (
 		<a href={redirecting_link}>
 			<div
@@ -284,11 +308,21 @@ function FriendTile({ id, ref, presence, data }) {
 				<div className="better-carousel-text-content">
 					{username}
 				</div>
+				{show_info[dataFetching.show_friend_userid_keyname] &&
+					<div className="better-carousel-text-content">
+						{id}
+					</div>
+				}
+				{show_info[dataFetching.show_account_create_date_keyname] && 
+					<div className="better-carousel-text-content">
+						{cleaner_date_created}
+					</div>
+				}
 			</div>
 		</a>
 	);
 }
-function CarouselContent({ friends, presences, friend_data  }) {
+function CarouselContent({ friends, presences, friend_data, show_info }) {
 	const containerRef = useRef(null);
 	const tileRef = useRef(null);
 	console.log("CAROUSEL CONTENT FRIEND DATA: ", friend_data)
@@ -431,6 +465,7 @@ function CarouselContent({ friends, presences, friend_data  }) {
 						key={friend}
 						presence={presences[friend]}
 						data={friend_data[friend]}
+						show_info={show_info}
 					/>
 				))}
 			</div>

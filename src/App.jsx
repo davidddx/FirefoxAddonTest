@@ -3,11 +3,13 @@ import CarouselHeader from './CarouselHeader.jsx'
 import CarouselContent from './CarouselContent.jsx'
 import * as dataFetching from './UserDataFetching.js'
 import {NumRowsContext, MaxNumRowsContext} from './AppContext.jsx'
+import {LocaleContext, TimezoneContext} from './LocaleTimezoneContext.jsx'
 function App() {
 	const app_wrapper_class_name = "better-carousel-extension-container"
 	const [user_id, set_user_id] = useState(null)
 	const [user_friends, set_user_friends] = useState([])
 	const [friends_presences, set_friends_presences] = useState({})
+	const test_excluded = [] 
 	const [loading_finished, set_loading_finished] = useState(false)
 	const [refresh_button_pressed, set_refresh_button_pressed] = useState(true)
 	const [num_rows, set_num_rows] = useState(1)
@@ -33,25 +35,18 @@ function App() {
 	const [friend_data, set_friend_data] = useState({})
 	const friend_data_ref = useRef({})
 	console.log("Friend data: ", friend_data)
+	const [show_account_created_date, set_show_account_created_date] = useState(false)
+	const [show_friend_userids, set_show_friend_userids] = useState(false)
+	console.log("Show friend userids", show_friend_userids)
+	console.log("Show account created date", show_account_created_date)
+	const [locale_context_value, set_locale_context_value] = useState('en-US')
+	const [timezone_context_value, set_timezone_context_value] = useState('UTC')
 	useEffect(() => {
 		const fetchData = async () => {
 			set_loading_finished(false)
 			const user_id_fetched = await dataFetching.getUserId()
+			const user_friends_fetched = await dataFetching.getModifiedFriends(user_id_fetched, test_excluded)
 			set_user_id(user_id_fetched)
-			const user_friends_fetched = []
-			const show_followers = await dataFetching.showFollowers()
-			const show_following = await dataFetching.showFollowing()
-			if(show_followers) {
-				const user_followers_fetched = await dataFetching.getUserFollowers(user_id_fetched)
-				user_friends_fetched.push(...user_followers_fetched)
-			}
-			if(show_following) {
-				const user_following_fetched = await dataFetching.getUserFollowing(user_id_fetched)
-				user_friends_fetched.push(...user_following_fetched)
-			}
-			user_friends_fetched.push(...(await dataFetching.getModifiedFriends(user_id_fetched)))
-
-			console.log("USER FRIENDS FETCHED: ", user_friends_fetched)
 			const fetched_presences = await dataFetching.getUserPresences(user_friends_fetched)
 			const user_friends_sorted = user_friends_fetched.sort((a, b) => dataFetching.compareIdsByPresence(a, b, fetched_presences))
 			user_friends_sorted.forEach((F) => {
@@ -63,6 +58,14 @@ function App() {
 				}
 				)
 			})
+			const show_account_created_fetch = await dataFetching.showAccountCreateDate()
+			console.log("Show account created: ", show_account_created_fetch)
+			if(show_account_created_fetch) {
+				const locale_tz = dataFetching.get_locale_and_timezone()
+				console.log("locale tz: ", locale_tz)
+			}
+			set_show_account_created_date(show_account_created_fetch)
+			set_show_friend_userids(await dataFetching.showFriendUserId())
 			set_user_id(user_id)
 			console.log("SETTING USER FRIENDS")
 			set_user_friends(user_friends_sorted)
@@ -102,15 +105,23 @@ function App() {
 		Object.entries(friend_data)
 		.filter(([key, val]) => filtered_friends.includes(parseInt(key)))
 	)
+	const show_info = {
+		[dataFetching.show_account_create_date_keyname]: show_account_created_date,
+		[dataFetching.show_friend_userid_keyname]: show_friend_userids
+	}
 	return (
+		<LocaleContext value={locale_context_value}>
+		<TimezoneContext value={timezone_context_value}>
 		<div className={app_wrapper_class_name}>
 			<NumRowsContext value={num_rows_context_memo}>
 			<MaxNumRowsContext value={max_num_rows_context_memo}>
 				<CarouselHeader num_friends={user_friends.length} on_header_press={on_header_click} loading_finished={loading_finished} friend_search_name={search_name} set_friend_search_name={set_search_name}/>
-				<CarouselContent friends={filtered_friends} presences={friends_presences} friend_data={filtered_data}/>
+				<CarouselContent friends={filtered_friends} presences={friends_presences} friend_data={filtered_data} show_info={show_info}/>
 			</MaxNumRowsContext>
 			</NumRowsContext>
 		</div>	
+		</TimezoneContext>
+		</LocaleContext>
 	);
 }
 

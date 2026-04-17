@@ -6,6 +6,7 @@
 		"clean": "rm -rf dist",
 		"dev-content": "vite build -c vite.content.config.js --watch",
 		"dev-popup": "vite build -c vite.popup.config.js --watch",
+		"serve-popup": "vite -c vite.popup.config.js",
 		"build": "vite build -c vite.content.config.js && vite build -c vite.popup.config.js"
 	},
 	"dependencies": {

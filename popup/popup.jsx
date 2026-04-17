@@ -9,7 +9,6 @@ function init() {
 		// Simple check to prevent double-injection
 		if (targetDiv.dataset.rendered === 'true') return;
 		targetDiv.dataset.rendered = 'true';
-
 		const root = createRoot(targetDiv);
 		root.render(<Popup />);
 		console.log("(POPUP) React mounted successfully.");
