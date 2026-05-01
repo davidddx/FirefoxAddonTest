@@ -18,6 +18,7 @@
 body {
 	margin: 0px;
 	border: 0px;
+	width: fit-content;
 	background: var(--bg-dark);
 	color: var(--text);
 	font-family: "Builder Sans";
@@ -93,6 +94,10 @@ h4 {
 	border-radius: 2px;
 	align-items: center;
 	margin-bottom: 10px;
+}
+
+.PopupHeader {
+	margin-top: 6px;
 }
 
 .popup-subsection-header {
