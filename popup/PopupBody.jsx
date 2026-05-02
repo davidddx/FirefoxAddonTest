@@ -200,13 +200,15 @@ function UserManagementSection() {
 			set_blacklist_selected(true)
 		}
 	}
-	const [adding_to_whitelist, set_adding_to_whitelist] = useState(false)
 	const whitelisted_users_section_title = "Whitelisted Users"
+	const [adding_to_whitelist, set_adding_to_whitelist] = useState(false)
 	const [removing_from_whitelist, set_removing_from_whitelist] = useState(false)
-	const [adding_to_blacklist, set_adding_to_blacklist] = useState(false)
 	const blacklisted_users_section_title = "Blacklisted Users"
+	const [adding_to_blacklist, set_adding_to_blacklist] = useState(false)
 	const [removing_from_blacklist, set_removing_from_blacklist] = useState(false)
 	const additional_users_section_title = "Additional Users"
+	const [adding_to_additional_users, set_adding_to_additional_users] = useState(false)
+	const [removing_from_additional_users, set_removing_from_additional_users] = useState(false)
 	const add_to_list = (list, set_list, adding_state, set_adding_state, keyname, id) => {
 		if(adding_state) {
 			throw new Error("Processing a previous add operation")
@@ -225,37 +227,7 @@ function UserManagementSection() {
 		})
 		set_adding_state(false)
 	}
-	const whitelist_add = (id) => {
-		try {
-			add_to_list(whitelisted_users, set_whitelisted_users, adding_to_whitelist, set_adding_to_whitelist, whitelisted_users_keyname, id)
-		}
-		catch (e) {
-			console.error("Error adding to whitelist: ", e.message)
-		}
 
-	}
-	/*
-	const whitelist_add = (id) => {
-		if(adding_to_whitelist) {
-			console.log("Could not add: currently adding to whitelist")
-			return
-		}
-		if (whitelisted_users.includes(id)) {
-			console.log("Could not add: user ", id, " in whitelist")
-			return
-		}
-		set_adding_to_whitelist(true)
-		const whitelisted_users_new = [...whitelisted_users, id]
-		console.log("Adding user to whitelist ", id)
-		saveData(whitelisted_users_keyname, whitelisted_users_new).then(() => {
-			set_adding_to_whitelist(false)
-			set_whitelisted_users(whitelisted_users_new)
-		}, 
-		(error) => {
-			console.error("Could not save data for whitelist add operation: ", error.message)
-		})
-	}
-	*/
 	const remove_from_list = (list, set_list, remove_state, set_remove_state, keyname, id) => {
 		if(remove_state) {
 			throw new Error("Processing previous remove operation")
@@ -272,49 +244,53 @@ function UserManagementSection() {
 		(error) => {console.error("Failed to remove from list", error.message)}
 		)
 	}
-	const whitelist_delete = (id) => {
-		remove_from_list(whitelisted_users, set_whitelisted_users, removing_from_whitelist, set_removing_from_whitelist, whitelisted_users_keyname, id) 
-	}
+	const whitelist_add = (id) => {
+		try {
+			add_to_list(whitelisted_users, set_whitelisted_users, adding_to_whitelist, set_adding_to_whitelist, whitelisted_users_keyname, id)
+		}
+		catch (e) {
+			console.error("Error adding to whitelist: ", e.message)
+		}
 
-	/*
+	}
 	const whitelist_delete = (id) => {
-		if(removing_from_whitelist) {
-			console.log("Could not remove: currently removing from whitelist")
-			return
+		try {
+			remove_from_list(whitelisted_users, set_whitelisted_users, removing_from_whitelist, set_removing_from_whitelist, whitelisted_users_keyname, id) 
 		}
-		if (!whitelisted_users.includes(id)) {
-			console.log("Could not remove: id", id, " is not in whitelist")
-			return
+		catch (e) {
+			console.error("Error removing from whitelist: ", e.message)
 		}
-		set_removing_from_whitelist(true)
-		const whitelisted_users_new = whitelisted_users.filter((x) => x != id)
-		saveData(whitelisted_users_keyname, whitelisted_users_new).then(() => {
-			set_removing_from_whitelist(false)
-			set_whitelisted_users(whitelisted_users_new)
-		},
-		(error) => {
-			console.error("Could not save data for whitelist delete operation: ", error.message)
-		})
 	}
-	*/
-	const on_additionalusers_add = (id) => {
-		console.log("Adding user to additional users", id)
+	const additionalusers_add = (id) => {
+		try {
+			add_to_list(additional_users, set_additional_users, adding_to_additional_users, set_adding_to_additional_users, additional_users_keyname, id)
+		}
+		catch (e) {
+			console.error("Error adding to aditional users: ", e.message)
+		}
 	}
-	const on_additionalusers_delete = (id) => {
-		console.log("Deleting user from additional users", id)
-		if(!additional_users.includes(id)) {
-			console.log("Did not delete additional user ", id, ": Not an additional user")
-			return
+	const additionalusers_delete = (id) => {
+		try {
+			remove_from_list(additional_users, set_additional_users, removing_from_additional_users, set_removing_from_additional_users, additional_users_keyname, id)
+		}
+		catch (e) {
+			console.error("Error removing from additional users: ", e.message)
 		}
 	}
 	const blacklist_add = (id) => {
-		console.log("Adding user to blacklist ", id)
+		try {
+			add_to_list(blacklisted_users, set_blacklisted_users, adding_to_blacklist, set_adding_to_blacklist, blacklisted_users_keyname, id)
+		}
+		catch (e) {
+			console.error("Error removing from blacklist: ", e.message)
+		}
 	}
 	const blacklist_delete = (id) => {
-		console.log("Removing user from blacklist ", id)
-		if(!blacklisted_users.includes(id)) {
-			console.log("Did not delete blacklisted user ", id, ": Not an blacklisted user")
-			return
+		try {
+			remove_from_list(blacklisted_users, set_blacklisted_users, removing_from_blacklist, set_removing_from_blacklist, blacklisted_users_keyname, id)
+		}
+		catch (e) {
+			console.error("Error removing from blacklist: ", e.message)
 		}
 	}
 	return (
@@ -369,8 +345,8 @@ function UserManagementSection() {
 				}
 				<PopupSubsectionWithInput 
 					title={additional_users_name} 
-					on_add={on_additionalusers_add} 
-					on_delete={on_additionalusers_delete}
+					on_add={additionalusers_add} 
+					on_delete={additionalusers_delete}
 				/>
 
 				<UserList
