@@ -30,6 +30,7 @@ export async function getMyFriendCount() {
 	}
 }
 
+// (wip/not tested)
 // id: user id
 export async function getUserFriends(id) {
 	const rv = []
