@@ -4,6 +4,7 @@ const thumbnails_api = "https://thumbnails.roblox.com"
 export async function getUserId() {
 	try {
 		const authResponse = await fetch(`${users_api}/v1/users/authenticated`, {
+			method: "GET",
 			credentials: 'include' 
 		});
 		const data = await authResponse.json();
@@ -14,20 +15,53 @@ export async function getUserId() {
 	}
 }
 
+export async function getMyFriendCount() {
+	try {
+		const url = `${friends_api}/v1/my/friends/count`
+		const response = await fetch(url, {
+			method: "GET",
+			credentials: "include"
+		});
+		const data = response.json()
+		return data.count
+	}
+	catch (e) {
+		console.error("Communication error:", e)
+	}
+}
+
 // id: user id
 export async function getUserFriends(id) {
+	const rv = []
 	try {
-		const url = `${friends_api}/v1/users/${id}/friends`
-		const authResponse = await fetch(url, {
-			credentials: 'include' 
-		});
-		const data = await authResponse.json();
-		const friend_ids = data.data.map(entry => entry.id)
-		return friend_ids
-
+		const limit = 50
+		const url = `${friends_api}/v1/users/${id}/friends/find`
+		const limit_param = "limit"
+		const cursor_param = "cursor"
+		let cursor = ""
+		while (cursor !== null) {
+			const query_params = new URLSearchParams(url)
+			query_params.append(limit_param, limit)
+			if (cursor !== "") {
+				query_params.append(cursor_param, cursor)
+			}
+			const fetch_url = `${url}?${query_params}`
+			const authResponse = await fetch(fetch_url, {
+				method: "GET",
+				credentials: 'include' 
+			});
+			const data = await authResponse.json();
+			const next_cursor_key = "NextCursor"
+			cursor = data[next_cursor_key] 
+			const entries_key = "PageItems"
+			const entries = data[entries_key]
+			const filtered = entries.filter(x => x.id !== -1)
+			rv.push(...filtered.map(entry => entry.id))
+		}
 	} catch (e) {
-		console.error("Communication error:", e);
+		console.log("Communication error:", e);
 	}
+	return rv
 }
 
 // id: user id
@@ -44,7 +78,7 @@ export async function getUserInfo(id) {
 }
 // excluded: list of excluded id's from the friends list.
 // id: user id
-export async function getModifiedFriends(id, excluded) {
+export async function getModifiedFriendsExclude(id, excluded) {
 	try {
 		const excluded_set = new Set(excluded)
 		const friends = await getUserFriends(id)

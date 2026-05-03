@@ -45,7 +45,7 @@ function App() {
 		const fetchData = async () => {
 			set_loading_finished(false)
 			const user_id_fetched = await dataFetching.getUserId()
-			const user_friends_fetched = await dataFetching.getModifiedFriends(user_id_fetched, test_excluded)
+			const user_friends_fetched = await dataFetching.getModifiedFriendsExclude(user_id_fetched, test_excluded)
 			set_user_id(user_id_fetched)
 			const fetched_presences = await dataFetching.getUserPresences(user_friends_fetched)
 			const user_friends_sorted = user_friends_fetched.sort((a, b) => dataFetching.compareIdsByPresence(a, b, fetched_presences))
