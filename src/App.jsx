@@ -48,6 +48,7 @@ function App() {
 			const user_friends_fetched = await dataFetching.getModifiedFriendsExclude(user_id_fetched, test_excluded)
 			set_user_id(user_id_fetched)
 			const fetched_presences = await dataFetching.getUserPresences(user_friends_fetched)
+			console.log("Fetched Presences: ", fetched_presences)
 			const user_friends_sorted = user_friends_fetched.sort((a, b) => dataFetching.compareIdsByPresence(a, b, fetched_presences))
 			user_friends_sorted.forEach((F) => {
 				dataFetching.getUserInfoAndHeadshot(F).then((value) => {
@@ -63,6 +64,8 @@ function App() {
 			if(show_account_created_fetch) {
 				const locale_tz = dataFetching.get_locale_and_timezone()
 				console.log("locale tz: ", locale_tz)
+				set_locale_context_value(locale_tz[dataFetching.locale_key])
+				set_timezone_context_value(locale_tz[dataFetching.timezone_key])
 			}
 			set_show_account_created_date(show_account_created_fetch)
 			set_show_friend_userids(await dataFetching.showFriendUserId())

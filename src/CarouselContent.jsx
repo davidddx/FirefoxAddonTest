@@ -5,7 +5,6 @@ import {
 	useLayoutEffect,
 	useContext,
 } from "react";
-import { getUserInfo, getUserAvatarHeadshot } from "./UserDataFetching.js";
 import { NumRowsContext, MaxNumRowsContext } from "./AppContext.jsx";
 import {LocaleContext, TimezoneContext} from "./LocaleTimezoneContext.jsx";
 import * as formatting from './formatting.js'

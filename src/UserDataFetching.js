@@ -1,3 +1,5 @@
+import {saveData, loadData} from "../utils/handle_storage.js"
+
 const users_api = "https://users.roblox.com"
 const friends_api = "https://friends.roblox.com"
 const thumbnails_api = "https://thumbnails.roblox.com"
@@ -135,15 +137,12 @@ export const invisible = "INVISIBLE"
 export const game_id = "GAME_ID"
 export const place_id = "PLACE_ID"
 export const last_location = "LAST_LOCATION"
-export async function getUserPresences(ids) {
+// expected rv: {id1: presence1, id2: presence2, ...}
+export async function getUserPresences(in_ids) {
 	const base_url = `${presence_url}/v1/presence/users`
 	try {
-		const response = await fetch(base_url, {
-			method: 'POST',	
-			body: JSON.stringify({userIds: ids}),
-			credentials: 'include'
-		})
-		const data = await response.json()
+		const limit = 50
+		const L = []
 		const editFormat = (D) => {
 			const id = D.userId
 			let curr_presence = offline 
@@ -179,12 +178,31 @@ export async function getUserPresences(ids) {
 				[id]: entries,
 			}
 		}
-		const reformatted = data.userPresences.map(D => editFormat(D))
-		const rv = Object.assign({}, ...reformatted)
+		for (let start_id = 0; start_id < in_ids.length; start_id += limit) {
+			let end_id = start_id + limit
+			if (end_id > in_ids.length) {
+				end_id = in_ids.length
+			}
+			const ids = in_ids.slice(start_id, end_id) 
+			const response = await fetch(base_url, {
+				method: 'POST',	
+				body: JSON.stringify({userIds: ids}),
+				credentials: 'include'
+			})
+			const data = await response.json()
+			const reformatted = data.userPresences.map(D => editFormat(D))
+			L.push(reformatted)
+		}
+		console.log("L: ", L)
+		const flat = L.flat()
+		console.log("Flat L: ", flat)
+		const rv = Object.assign({}, ...flat)
+		console.log("presence rv: ", rv)
 		return rv
 	}
 	catch (e) {
-		console.error(`Error getting presence for users ${ids}: `, e)
+		console.error(`Error getting presence for users ${in_ids}: `, e)
+		return {}
 	}
 }
 export const compareIdsByPresence = (a, b, presences) => {
@@ -229,7 +247,6 @@ export const compareIdsByPresence = (a, b, presences) => {
 	}
 	return -1
 }
-const storage = (typeof browser === 'undefined') ? chrome.storage : browser.storage
 export const show_account_create_date_keyname = "better-carousel-show-create-date";
 export const show_friend_userid_keyname = "better-carousel-show-friend-userid";
 
@@ -253,21 +270,6 @@ export async function showAccountCreateDate() {
 
 export async function showFriendUserId() {
 	return await getOrInitBoolean(show_friend_userid_keyname);
-}
-
-export async function loadData(key) {
-	try {
-		const result = await storage.local.get([key]);
-		console.log("RESULT: ", result)
-		if(Object.keys(result).length === 0) {
-			return null
-		}
-		return result[key];
-	}
-	catch (e) {
-		console.error(`Could not load data for ${key}`, e) 
-	}
-	return null
 }
 
 export const locale_key = "locale"
