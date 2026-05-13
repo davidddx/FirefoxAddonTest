@@ -317,6 +317,11 @@ function FriendTile({ id, ref, presence, data, show_info }) {
 						{cleaner_date_created}
 					</div>
 				}
+				{presence[dataFetching.place_id] !== null && 
+					<div className="better-carousel-text-content">
+						{presence[dataFetching.last_location]}
+					</div>
+				}
 			</div>
 		</a>
 	);
